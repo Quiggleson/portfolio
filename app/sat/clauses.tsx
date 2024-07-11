@@ -10,12 +10,14 @@ export function CreateClause() {
 }
 
 // Displays the clause
-export function ReadClause({ clauseName, length, knownTerms}: {clauseName: string, length: number, knownTerms: string}) {
+export function ReadClause({ clause }: {clause: Clause}) {
     return (
         <div className="bg-gray-100 rounded border w-fit">
-            <span className="p-2">Name: {clauseName}</span>
-            <span className="p-2">Length: {length}</span>
-            <span className="p-2">Known Terms: {knownTerms}</span>
+            <span className="p-2">Name: {clause.name}</span>
+            <span className="p-2">Length: {clause.length}</span>
+            <span className="p-2">Known Terms:</span>
+            {clause.knownTerms.map((term, i) => <>{term+","}</>)}
+            <span className="px-1"></span>
         </div>
     );
 }
@@ -28,4 +30,10 @@ function EditClause() {
 // Opens confirmation modal
 function DeleteClause() {
 
+}
+
+export interface Clause {
+    name: string,
+    length: number,
+    knownTerms: string[]
 }

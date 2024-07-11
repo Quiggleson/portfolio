@@ -2,22 +2,26 @@
 
 import { ReadClause } from "./clauses";
 import { useState } from "react";
-import { CreateClauseModal } from "./modals";
-
-import './sat.css';
+import { CreateClauseModal, EditClauseModal } from "./modals";
+import { Clause } from "./clauses";
 
 export default function Sat() {
-    const [showModal, setShowModal] = useState(false);
-    const [clauses, setClauses] = useState<{name: string, length: number, knownTerms: string}[]>([]);
+    const [showModal, setShowModal] = useState('');
+    const [clauses, setClauses] = useState<Clause[]>([]);
+    const [pendingClause, setPendingClause] = useState<Clause>();
 
-    function addClause(name: string, length: number, knownTerms: string) {
+    function addClause(clause: Clause) {
         setClauses(
             [
                 ...clauses,
-                {name: name, length: length, knownTerms: knownTerms},
+                clause,
             ]
         );
     };
+
+    function EditClause(clause: Clause) {
+
+    }
 
     return (
         <div className="p-2">
@@ -34,22 +38,35 @@ export default function Sat() {
             <li>Add and Display clause</li>
         </ul>
         <br />
-        <button onClick={() => setShowModal(true)} className="p-1 outline rounded hover:bg-gray-100">Add clause</button>
-        {showModal &&
+        <button onClick={() => setShowModal('CreateClause')} className="p-1 outline rounded hover:bg-gray-100">Add clause</button>
+        {showModal === 'CreateClause' &&
         <CreateClauseModal 
-            onClose={() => setShowModal(false)}
+            onClose={() => setShowModal('')}
             onAdd={addClause}    
+        />
+        }
+        {showModal === 'EditClause' &&
+        <EditClauseModal 
+            onClose={() => setShowModal('')}
+            onSubmit={EditClause}
+            clause={pendingClause}
         />
         }
         <br />
         <ul className="list-disc">
             {clauses.map((clause, i) => 
-            <li key={"clause_"+i} className="p-2">
+            <li key={"clause_"+i} className="p-2 flex">
                 <ReadClause 
-                    clauseName={clause.name}
-                    length={clause.length}
-                    knownTerms={clause.knownTerms}
+                    clause={clause}
                 />
+                <div className="my-auto">
+                    <button 
+                        className="rounded border border-black px-1 mx-1"
+                        onClick={() => {
+                            setPendingClause({name: clause.name, length: clause.length, knownTerms: clause.knownTerms});
+                            setShowModal('EditClause');
+                    }}>Edit</button>
+                </div>
             </li>
             )}
         </ul>
