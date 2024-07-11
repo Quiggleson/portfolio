@@ -6,7 +6,7 @@ import { CreateClauseModal } from "./modals";
 
 // Opens create clause modal
 export function CreateClause() {
-    return (<button onClick={() => CreateClauseModal}>I'm a button!</button>);
+    return (<button onClick={() => CreateClauseModal}>I am a button!</button>);
 }
 
 // Displays the clause
