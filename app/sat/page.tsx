@@ -20,7 +20,20 @@ export default function Sat() {
     };
 
     function EditClause(clause: Clause) {
+        setClauses(
+            [
+                ...clauses.filter((c) => c.id !== clause.id),
+                clause
+            ]
+        );
+    }
 
+    function DeleteClause(clause: Clause) {
+        setClauses(
+            [
+                ...clauses.filter((c) => c.id !== clause.id)
+            ]
+        );
     }
 
     return (
@@ -28,14 +41,19 @@ export default function Sat() {
         <p>This is a page for 3SAT shenanigans</p>
         <p>TODO:</p>
         <ul className="list-disc list-inside">
-            <li>CRUD operations on clauses</li>
+            <li>Clean up knownTerms (trim, remove empty, etc)</li>
             <li>Click two clauses to combine them</li>
             <li>General clause stuff (unknown length, term path analysis)</li>
             <li>Export and import instance</li>
+            <li>Add clause count</li>
+            <li>Separate derived and given clauses</li>
+            <li>Process all button</li>
         </ul>
         <p>Done:</p>
         <ul className="list-disc list-inside">
             <li>Add and Display clause</li>
+            <li>CRUD operations on clauses</li>
+            <li>Copy clause</li>
         </ul>
         <br />
         <button onClick={() => setShowModal('CreateClause')} className="p-1 outline rounded hover:bg-gray-100">Add clause</button>
@@ -48,14 +66,16 @@ export default function Sat() {
         {showModal === 'EditClause' &&
         <EditClauseModal 
             onClose={() => setShowModal('')}
-            onSubmit={EditClause}
+            onEdit={EditClause}
+            onAdd={addClause}
+            onDelete={DeleteClause}
             clause={pendingClause}
         />
         }
         <br />
         <ul className="list-disc">
             {clauses.map((clause, i) => 
-            <li key={clause.name} className="p-2 flex">
+            <li key={clause.id} className="p-2 flex">
                 <ReadClause 
                     clause={clause}
                 />
@@ -63,7 +83,7 @@ export default function Sat() {
                     <button 
                         className="rounded border border-black px-1 mx-1"
                         onClick={() => {
-                            setPendingClause({name: clause.name, length: clause.length, knownTerms: clause.knownTerms});
+                            setPendingClause(clauses.filter((c) => c.id === clause.id)[0]);
                             setShowModal('EditClause');
                     }}>Edit</button>
                 </div>

@@ -10,7 +10,7 @@ export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd:
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log({ name, length, knownTerms});
-        onAdd({name: name, length: length, knownTerms: knownTerms.split(',')});
+        onAdd({id: crypto.randomUUID(), name, length: length, knownTerms: knownTerms.split(',')});
         onClose();
     }
 
@@ -62,17 +62,18 @@ export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd:
     );
 }
 
-export function EditClauseModal({onClose, onSubmit, clause}
+export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
     : {
         onClose: () => void, 
-        onSubmit: (clause: Clause) => void, 
+        onEdit: (clause: Clause) => void,
+        onDelete: (clause: Clause) => void,
+        onAdd: (clause: Clause) => void,
         clause: Clause | undefined
     }) {
     
     if (clause === undefined) {
         onClose();
-        clause = {name: "", length: 1, knownTerms: [""]}
-        // return (<p>[ERROR] Clause is undefined</p>);
+        clause = {id: "", name: "", length: 1, knownTerms: [""]}
     }
 
     var knownTermStr = '';
@@ -88,8 +89,19 @@ export function EditClauseModal({onClose, onSubmit, clause}
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log({ name, length, knownTerms});
-        onSubmit({name: name, length: length, knownTerms: knownTerms.split(',')});
+        onEdit({id: clause.id, name: name, length: length, knownTerms: knownTerms.split(',')});
         onClose();
+    }
+
+    const handleDelete = (event: React.FormEvent) => {
+        event.preventDefault();
+        onDelete(clause);
+        onClose();
+    }
+
+    const handleCopy = (event: React.FormEvent) => {
+        event.preventDefault();
+        onAdd({id: crypto.randomUUID(), name: clause.name, length: clause.length, knownTerms: clause.knownTerms});
     }
 
     return (
@@ -131,8 +143,10 @@ export function EditClauseModal({onClose, onSubmit, clause}
                             autoComplete="off"
                         />
                     </div>
-                    <div className="flex justify-center">
+                    <div className="flex justify-between p-2">
                         <button type="submit" className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">SUBMIT</button>
+                        <button onClick={handleDelete} className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">DELETE</button>
+                        <button onClick={handleCopy} className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">COPY</button>
                     </div>
                 </form>
             </div>

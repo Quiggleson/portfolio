@@ -33,6 +33,7 @@ function DeleteClause() {
 }
 
 export interface Clause {
+    id: string,
     name: string,
     length: number,
     knownTerms: string[]
