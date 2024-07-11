@@ -30,7 +30,7 @@ export default function Sat() {
         <ul className="list-disc list-inside">
             <li>CRUD operations on clauses</li>
             <li>Click two clauses to combine them</li>
-            <li>General clause stuff (unkown length, term path analysis)</li>
+            <li>General clause stuff (unknown length, term path analysis)</li>
             <li>Export and import instance</li>
         </ul>
         <p>Done:</p>
@@ -55,7 +55,7 @@ export default function Sat() {
         <br />
         <ul className="list-disc">
             {clauses.map((clause, i) => 
-            <li key={"clause_"+i} className="p-2 flex">
+            <li key={clause.name} className="p-2 flex">
                 <ReadClause 
                     clause={clause}
                 />

@@ -16,7 +16,7 @@ export function ReadClause({ clause }: {clause: Clause}) {
             <span className="p-2">Name: {clause.name}</span>
             <span className="p-2">Length: {clause.length}</span>
             <span className="p-2">Known Terms:</span>
-            {clause.knownTerms.map((term, i) => <>{term+","}</>)}
+            {clause.knownTerms.map((term, i) => <span key={i}>{term+","}</span>)}
             <span className="px-1"></span>
         </div>
     );

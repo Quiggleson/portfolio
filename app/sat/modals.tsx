@@ -70,7 +70,9 @@ export function EditClauseModal({onClose, onSubmit, clause}
     }) {
     
     if (clause === undefined) {
-        return (<p>[ERROR] Clause is undefined</p>);
+        onClose();
+        clause = {name: "", length: 1, knownTerms: [""]}
+        // return (<p>[ERROR] Clause is undefined</p>);
     }
 
     var knownTermStr = '';
