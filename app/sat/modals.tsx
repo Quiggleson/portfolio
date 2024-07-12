@@ -10,7 +10,8 @@ export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd:
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log({ name, length, knownTerms});
-        onAdd({id: crypto.randomUUID(), name, length: length, knownTerms: knownTerms.split(',')});
+        var terms = knownTerms.split(',').map((term, i) => term.trim()).filter((term) => term.length > 0);
+        onAdd({id: crypto.randomUUID(), name, length: length, knownTerms: terms});
         onClose();
     }
 
@@ -78,8 +79,9 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
 
     var knownTermStr = '';
 
-    clause.knownTerms.forEach((term) => {
-        knownTermStr += term + ',';
+    clause.knownTerms.forEach((term, i) => {
+        knownTermStr += term;
+        if (i !== clause.knownTerms.length -1 ) {knownTermStr += ', '};
     })
 
     const [name, setName] = useState(clause.name);
@@ -89,7 +91,8 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         console.log({ name, length, knownTerms});
-        onEdit({id: clause.id, name: name, length: length, knownTerms: knownTerms.split(',')});
+        var terms = knownTerms.split(',').map((term, i) => term.trim()).filter((term) => term.length > 0);
+        onEdit({id: clause.id, name: name, length: length, knownTerms: terms});
         onClose();
     }
 
