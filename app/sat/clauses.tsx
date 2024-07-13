@@ -87,6 +87,36 @@ export function uniqueClauses(clauses: Clause[]) {
     return clauseList;
 }
 
+// render lines between families of clauses
+export function RenderLines({families}: {families: {parent1: Clause, parent2: Clause, child: Clause}[]}) {
+    console.log('Rendering families: ' + JSON.stringify(families));
+    return (
+        <div>
+            <svg className="absolute top-0 left-0 inset-0 w-full h-full pointer-events-none">
+                {families.map((family, i) => <>
+                <line
+                    key={family.parent1.id + "" + i}
+                    x1={document.getElementById(family.parent1.id)?.getBoundingClientRect().x}
+                    y1={document.getElementById(family.parent1.id)?.getBoundingClientRect().y}
+                    x2={document.getElementById(family.child.id)?.getBoundingClientRect().x}
+                    y2={document.getElementById(family.child.id)?.getBoundingClientRect().y}
+                    className="stroke-2 stroke-emerald-800"
+                />
+                <line
+                    key={family.parent1.id + "" + i}
+                    x1={document.getElementById(family.parent2.id)?.getBoundingClientRect().x}
+                    y1={document.getElementById(family.parent2.id)?.getBoundingClientRect().y}
+                    x2={document.getElementById(family.child.id)?.getBoundingClientRect().x}
+                    y2={document.getElementById(family.child.id)?.getBoundingClientRect().y}
+                    className="stroke-2 stroke-emerald-800"
+                />
+                </>
+                )}
+            </svg>
+        </div>
+    );
+}
+
 export interface Clause {
     id: string,
     name: string,
