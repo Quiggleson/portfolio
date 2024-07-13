@@ -90,7 +90,7 @@ export default function Sat() {
         <p>This is a page for 3SAT shenanigans</p>
         <p>TODO:</p>
         <ul className="list-disc list-inside">
-            <li>Arrows!</li>
+            <li>Clean up arrows</li>
             <li>General clause stuff (unknown length, term path analysis)</li>
             <li>Export and import instance</li>
             <li>Add clause count</li>
@@ -100,6 +100,7 @@ export default function Sat() {
         </ul>
         <p>Done:</p>
         <ul className="list-disc list-inside">
+            <li>Lines</li>
             <li>Drag clauses</li>
             <li>Click two clauses to combine them</li>
             <li>Add and Display clause</li>
