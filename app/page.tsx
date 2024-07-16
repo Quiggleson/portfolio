@@ -1,6 +1,6 @@
 export default function Home(){
   return (
-  <div className="p-2">
+  <div className="p-2 animate-fadeInBottom">
     <h1>Welcome!</h1>
     <p>This is a collection of some things I find cool</p>
     <br></br>
