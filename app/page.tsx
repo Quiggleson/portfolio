@@ -1,5 +1,5 @@
 import Image from "next/image";
-import purplePic from '@/public/powered_by_purple.png'
+import purplePic from '../public/powered_by_purple.png'
 
 export default function Home(){
   return (
