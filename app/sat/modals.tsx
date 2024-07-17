@@ -17,7 +17,7 @@ export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd:
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 p-20 bg-blue-400 relative">
+            <div className="rounded outline outline-2 outline-black-50 p-20 bg-purple-com relative">
                 <p className="absolute top-0 mt-5 ml-2">Add Clause</p>
                 <button onClick={onClose} className="absolute top-0 right-0 mt-2 mr-2">X</button>
                 <form onSubmit={handleSubmit} className="">
@@ -55,7 +55,7 @@ export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd:
                         />
                     </div>
                     <div className="flex justify-center">
-                        <button type="submit" className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">SUBMIT</button>
+                        <button type="submit" className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">SUBMIT</button>
                     </div>
                 </form>
             </div>
@@ -109,7 +109,7 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 p-20 bg-blue-400 relative">
+            <div className="rounded outline outline-2 outline-black-50 p-20 bg-purple-com relative">
                 <p className="absolute top-0 mt-5 ml-2">Edit Clause</p>
                 <button onClick={onClose} className="absolute top-0 right-0 mt-2 mr-2">X</button>
                 <form onSubmit={handleSubmit} className="">
@@ -147,9 +147,9 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
                         />
                     </div>
                     <div className="flex justify-between p-2">
-                        <button type="submit" className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">SUBMIT</button>
-                        <button onClick={handleDelete} className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">DELETE</button>
-                        <button onClick={handleCopy} className="px-5 p-2 hover:bg-sky-700 w-fit border rounded border-black">COPY</button>
+                        <button type="submit" className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">SUBMIT</button>
+                        <button onClick={handleDelete} className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">DELETE</button>
+                        <button onClick={handleCopy} className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">COPY</button>
                     </div>
                 </form>
             </div>

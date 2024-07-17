@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Nunito } from "next/font/google";
 import "./globals.css";
 import TopNav from "./topnav";
 
 const inter = Inter({ subsets: ["latin"] });
+const nunito = Nunito({ subsets: ["latin"]})
 
 export const metadata: Metadata = {
   title: "Quigley Portfolio",
@@ -17,9 +18,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={nunito.className}>
         <TopNav />
-        {children}
+        <div className="animate-fadeInBottom h-full">
+          {children}
+        </div>
         </body>
     </html>
   );

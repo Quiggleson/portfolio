@@ -28,6 +28,10 @@ const config: Config = {
       animation: {
         fadeInBottom: 'fadeInBottom 1s ease-out',
       },
+      colors: {
+        'purple-com': '#7D26CD',
+        'purple-hover': '#ddbbff'
+      }
     },
   },
   plugins: [],
