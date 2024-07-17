@@ -5,3 +5,19 @@
 body {
     background: #7d26cd;
 }
+
+::-webkit-scrollbar {
+    height: 8px; /* Adjust the height for horizontal scrollbars */
+    background: transparent; /* Optional: transparent background */
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #A0AEC0; /* Color of the scrollbar thumb */
+    border-radius: 10px; /* Roundness of the thumb */
+    border: 2px solid transparent; /* Optional: creates padding around the thumb */
+    background-clip: content-box; /* Optional: ensures the thumb fits within the scrollbar track */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: #718096; /* Darker color on hover */
+}
