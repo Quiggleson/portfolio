@@ -20,7 +20,7 @@ export default function Home(){
       <h1 className="font-bold">When&apos;s all this then?</h1>
       <p>In case I get very tired and stop working on this, this website was under development July 2024.</p>
     </div>
-    <div className="mx-2">
+    <div className="mx-2 w-fit">
       <a href="https://web.archive.org/web/20170413205801/http://purple.com/" target="_blank">
       <Image width="88" height="31" alt="purple network" src={purplePic} /></a>
     </div>
