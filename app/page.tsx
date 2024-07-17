@@ -1,4 +1,5 @@
 import Image from "next/image";
+import purplePic from '@/public/powered_by_purple.png'
 
 export default function Home(){
   return (
@@ -21,7 +22,7 @@ export default function Home(){
     </div>
     <div className="mx-2">
       <a href="https://web.archive.org/web/20170413205801/http://purple.com/" target="_blank">
-      <Image width="88" height="31" alt="purple network" src="/powered_by_purple.png" /></a>
+      <Image width="88" height="31" alt="purple network" src={purplePic} /></a>
     </div>
   </div>
   );
