@@ -20,7 +20,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={nunito.className}>
         <TopNav />
-        <div className="animate-fadeInBottom h-full">
+        <div className="animate-fadeInBottom size-full">
           {children}
         </div>
         </body>

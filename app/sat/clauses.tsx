@@ -1,9 +1,5 @@
 'use client';
 
-import { CreateClauseModal } from "./modals";
-
-// Clause related functions
-
 // Displays the clause
 export function ReadClause({ clause, selected }: {clause: Clause, selected: boolean}) {
     return (
@@ -89,32 +85,99 @@ export function uniqueClauses(clauses: Clause[]) {
 
 // render lines between families of clauses
 export function RenderLines({families}: {families: {parent1: Clause, parent2: Clause, child: Clause}[]}) {
-    console.log('Rendering families: ' + JSON.stringify(families));
+    var familyRects: { parent1: DOMRect | undefined; parent2: DOMRect | undefined; child: DOMRect | undefined; }[] = []
+    families.map((family, i) => {
+        familyRects.push({
+            parent1: document.getElementById(family.parent1.id)?.getBoundingClientRect(),
+            parent2: document.getElementById(family.parent2.id)?.getBoundingClientRect(),
+            child: document.getElementById(family.child.id)?.getBoundingClientRect()
+        })
+    })
     return (
         <div>
-            <svg className="absolute top-0 left-0 inset-0 w-full h-full pointer-events-none">
-                {families.map((family, i) => <>
+            <svg className="fixed top-0 left-0 inset-0 w-full h-full pointer-events-none">
+                {familyRects.map((family, i) => <>
+                <LineHelper 
+                    familyRects={family}
+                />
+                </>)}
+                {/* {families.map((family, i) => <>
                 <line
                     key={family.parent1.id + "" + i}
                     x1={document.getElementById(family.parent1.id)?.getBoundingClientRect().x}
-                    y1={document.getElementById(family.parent1.id)?.getBoundingClientRect().y}
-                    x2={document.getElementById(family.child.id)?.getBoundingClientRect().x}
-                    y2={document.getElementById(family.child.id)?.getBoundingClientRect().y}
+                    y1={document.getElementById(family.parent1.id)?.getBoundingClientRect().top}
+                    x2={document.getElementById(family.child.id)?.getBoundingClientRect().left}
+                    y2={document.getElementById(family.child.id)?.getBoundingClientRect().top}
                     className="stroke-2 stroke-emerald-800"
                 />
                 <line
                     key={family.parent1.id + "" + i}
-                    x1={document.getElementById(family.parent2.id)?.getBoundingClientRect().x}
-                    y1={document.getElementById(family.parent2.id)?.getBoundingClientRect().y}
-                    x2={document.getElementById(family.child.id)?.getBoundingClientRect().x}
-                    y2={document.getElementById(family.child.id)?.getBoundingClientRect().y}
+                    x1={document.getElementById(family.parent2.id)?.getBoundingClientRect().left}
+                    y1={document.getElementById(family.parent2.id)?.getBoundingClientRect().top}
+                    x2={document.getElementById(family.child.id)?.getBoundingClientRect().left}
+                    y2={document.getElementById(family.child.id)?.getBoundingClientRect().top}
                     className="stroke-2 stroke-emerald-800"
                 />
                 </>
-                )}
+                )} */}
             </svg>
         </div>
     );
+}
+
+export function LineHelper({familyRects}: {familyRects: { parent1: DOMRect | undefined; parent2: DOMRect | undefined; child: DOMRect | undefined; }}){
+    if (familyRects.parent1 === undefined || familyRects.parent2 === undefined || familyRects.child === undefined) {
+        return (<></>);
+    }
+    const buffer = 5;
+    const parent1ymed = (familyRects.parent1.top + familyRects.parent1.bottom)/2;
+    const parent2ymed = (familyRects.parent2.top + familyRects.parent2.bottom)/2;
+    const childymed = (familyRects.child!.top + familyRects.child!.bottom)/2;
+    const xmed = familyRects.parent1.right > familyRects.parent2.right ? (familyRects.parent1.right + familyRects.child!.left)/2 : (familyRects.parent2.right + familyRects.child!.left)/2;
+    const styling="stroke-2 stroke-black";
+    return (
+        <>
+            {/* Right of parent1*/}
+            <line 
+                x1={familyRects.parent1.right}
+                y1={parent1ymed}
+                x2={xmed}
+                y2={parent1ymed}
+                className={styling}
+            />
+            {/* Right of parent2*/}
+            <line 
+                x1={familyRects.parent2.right}
+                y1={parent2ymed}
+                x2={xmed}
+                y2={parent2ymed}
+                className={styling}
+            />
+            {/* Left of child*/}
+            <line 
+                x1={familyRects.child!.left}
+                y1={childymed}
+                x2={xmed}
+                y2={childymed}
+                className={styling}
+            />
+            {/* Vertical at xmed*/}
+            <line 
+                x1={xmed}
+                x2={xmed}
+                y1={Math.max(parent1ymed, childymed)}
+                y2={Math.min(parent2ymed, childymed)}
+                className={styling}
+            />
+        </>
+    );
+}
+
+export function RenderClause(){
+    
+    return (<>
+        
+    </>);
 }
 
 export interface Clause {

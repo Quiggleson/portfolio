@@ -85,18 +85,32 @@ export default function Sat() {
         }, 100);
     }
 
+    const handleScroll = () => {
+        setTimeout(() => {
+            setFamilies([...families]);
+        }, 100);
+    }
+
+    useEffect(() => {
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    })
+
     return (
-        <div className="p-2 relative h-screen">
+        <div className="p-2 relative" id="sat-container">
         <p>This is a page for 3SAT shenanigans</p>
         <p>TODO:</p>
         <ul className="list-disc list-inside">
-            <li>Clean up arrows</li>
-            <li>General clause stuff (unknown length, term path analysis)</li>
             <li>Export and import instance</li>
+            <li>General clause stuff (unknown length, term path analysis)</li>
+            <li>Keyboard shortcuts</li>
+            <li>Better state control (selecting allows different actions as opposed to the current which is only process)</li>
             <li>Add clause count</li>
             <li>Separate derived and given clauses</li>
             <li>Process all button</li>
             <li>Make knownTerms a set</li>
+            <li>Clean up lines (the order of clauses is finicky)</li>
+            <li>Clean up diagram</li>
         </ul>
         <p>Done:</p>
         <ul className="list-disc list-inside">
@@ -128,7 +142,7 @@ export default function Sat() {
         <br />
         <ul className="list-disc">
             {clauses.map((clause, i) => 
-            <li key={clause.id} className="p-2 flex">
+            <li key={clause.id} className="p-2 flex w-fit">
                 <Draggable
                     onStart={handleStart}
                     onStop={handleStop}

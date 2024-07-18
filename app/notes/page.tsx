@@ -1,0 +1,33 @@
+
+export default function Notes() {
+    return (
+        <div>
+            <div className="container mx-auto w-fit my-2 text-center">
+                <h1 className="text-xl">Development Notes</h1>
+                <p>Here&apos;s some notes from development</p>
+            </div>
+            <div className="m-2 mx-4 text-justify">
+                <h1 className="font-bold">Rendering lines for 3SAT implication graph</h1>
+                <p>[18 July 2024]</p>
+                <p>Alright, let&apos;s see here. The old solution put an SVG in the background which took up the entire page. Alas, this got a bit difficult with the top nav bar. Additionally, I can imagine the page will get quite large so tying the height to the viewport will not quite be adequate. Perhaps I can iterate the clauses first, take the largest x, y and set the width and height to that. Gotta double check the offset with the top nav bar as well.</p>
+                <p>Alright, what&apos;s going on?</p>
+                <p>The position of the clauses is relative to the view</p>
+                <p>The SVG starts right below the top nav</p>
+                <p>Either find a way to get the position relative to the parent div or move the SVG to start at the top of the view</p>
+                <p>[SOLUTION]</p>
+                <p>Lol just had to set fixed instead of absolute. Alright now it&apos;s time for cleaner lines B)</p>
+                <p>[Reopened]</p>
+                <p>jk that didn&apos;t work, it has to support scrolling so the svg can&apos;t be fixed, it has to be relative to the parent div. Alright what do we want?</p> 
+                <p>Draw 4 lines:</p>
+                <ul>
+                    <li>parent1.right to xmedian</li>
+                    <li>parent2.right to xmedian</li>
+                    <li>child.left to xmedian</li>
+                    <li>But what if the child is on the right?</li>
+                </ul>
+                <p>Hmm let&apos;s try diagram-js. Naaaahhhh I like the idea of designing and understanding everything</p>
+                <p>Looks like adding an event listener then updating families works good enough for now. Although it could get quite slow. Good enough for now</p>
+            </div>
+        </div>
+    );
+}
