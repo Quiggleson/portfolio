@@ -2,16 +2,16 @@
 import { useState } from "react";
 import { Clause } from "./clauses";
 
-export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd: (clause: Clause) => void}) {
+export function CreateClauseModal({ onClose, onAdd }: { onClose: () => void, onAdd: (clause: Clause) => void }) {
     const [name, setName] = useState('');
     const [length, setLength] = useState(0);
     const [knownTerms, setKnownTerms] = useState('');
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        console.log({ name, length, knownTerms});
+        console.log({ name, length, knownTerms });
         var terms = knownTerms.split(',').map((term, i) => term.trim()).filter((term) => term.length > 0);
-        onAdd({id: crypto.randomUUID(), name, length: length, knownTerms: terms});
+        onAdd({ id: crypto.randomUUID(), name, length: length, knownTerms: terms });
         onClose();
     }
 
@@ -63,25 +63,25 @@ export function CreateClauseModal({onClose, onAdd}: {onClose: () => void, onAdd:
     );
 }
 
-export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
+export function EditClauseModal({ onClose, onEdit, onDelete, onAdd, clause }
     : {
-        onClose: () => void, 
+        onClose: () => void,
         onEdit: (clause: Clause) => void,
         onDelete: (clause: Clause) => void,
         onAdd: (clause: Clause) => void,
         clause: Clause | undefined
     }) {
-    
+
     if (clause === undefined) {
         onClose();
-        clause = {id: "", name: "", length: 1, knownTerms: [""]}
+        clause = { id: "", name: "", length: 1, knownTerms: [""] }
     }
 
     var knownTermStr = '';
 
     clause.knownTerms.forEach((term, i) => {
         knownTermStr += term;
-        if (i !== clause.knownTerms.length -1 ) {knownTermStr += ', '};
+        if (i !== clause.knownTerms.length - 1) { knownTermStr += ', ' };
     })
 
     const [name, setName] = useState(clause.name);
@@ -90,9 +90,9 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
-        console.log({ name, length, knownTerms});
+        console.log({ name, length, knownTerms });
         var terms = knownTerms.split(',').map((term, i) => term.trim()).filter((term) => term.length > 0);
-        onEdit({id: clause.id, name: name, length: length, knownTerms: terms});
+        onEdit({ id: clause.id, name: name, length: length, knownTerms: terms });
         onClose();
     }
 
@@ -104,7 +104,7 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
 
     const handleCopy = (event: React.FormEvent) => {
         event.preventDefault();
-        onAdd({id: crypto.randomUUID(), name: clause.name, length: clause.length, knownTerms: clause.knownTerms});
+        onAdd({ id: crypto.randomUUID(), name: clause.name, length: clause.length, knownTerms: clause.knownTerms });
     }
 
     return (
@@ -152,6 +152,39 @@ export function EditClauseModal({onClose, onEdit, onDelete, onAdd, clause}
                         <button onClick={handleCopy} className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">COPY</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    );
+}
+
+export function ControlsModal({ onClose }: { onClose: () => void }) {
+    return (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="rounded outline outline-2 outline-black-50 p-5 bg-purple-com">
+                <div className="max-w-sm">
+                        <div className="flex justify-between">
+                        <p className="mr-10">Help & Controls</p>
+                        <button onClick={onClose} className="">X</button>
+                        </div>
+                    <br />
+                    <p>Prepend relevant command with a number, i,  to repeat that command i times</p>
+                    <div className="grid grid-cols-[max-content_auto]">
+                            <p className="pr-5">[n]</p>
+                            <p>Add new 3-t clause <br/>It will iterate terms by lowercase letter, appending an additional letter after reaching z. Ex/ "a", "b", ... "z", "aa", "ab", ...</p>
+                            <p className="pr-5">[f]</p>
+                            <p>Format clauses <br />Draw relations from parent clauses on the left to child clauses on the right</p>
+                            <p className="pr-5">[:e]</p>
+                            <p>Export <br />Export clauses as json data</p>
+                            <p className="pr-5">[:l]</p>
+                            <p>Load <br />Load json data</p>
+                            <p className="pr-5">[:ni]</p>
+                            <p>New i-terminal clause <br />Add new clause of length i</p>
+                        <div className="mr-5 font-mono text-nowrap">
+                        </div>
+                        <div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     );

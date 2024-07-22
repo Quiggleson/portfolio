@@ -19,6 +19,10 @@ export function negateTerm(term: string) {
     return term[0] === '-' ? term.substring(1) : '-' + term;
 }
 
+export function positiveTerm(term: string) {
+    return term[0] === '-' ? term.substring(1) : term;
+}
+
 // Checks clauses can be combined
 export function validProcess(clause1: Clause, clause2: Clause) {
     var termCount = 0;
@@ -165,8 +169,8 @@ export function LineHelper({familyRects}: {familyRects: { parent1: DOMRect | und
             <line 
                 x1={xmed}
                 x2={xmed}
-                y1={Math.max(parent1ymed, childymed)}
-                y2={Math.min(parent2ymed, childymed)}
+                y1={Math.max(parent1ymed, childymed, parent2ymed)}
+                y2={Math.min(parent1ymed, childymed, parent2ymed)}
                 className={styling}
             />
         </>

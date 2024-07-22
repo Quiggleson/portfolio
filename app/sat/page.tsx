@@ -1,8 +1,8 @@
 'use client';
 
 import { combineClauses, negateTerm, ReadClause, RenderLines, uniqueClauses, validProcess } from "./clauses";
-import { useState, useEffect, useRef } from "react";
-import { CreateClauseModal, EditClauseModal } from "./modals";
+import { useState, useEffect, useRef, KeyboardEvent } from "react";
+import { ControlsModal, CreateClauseModal, EditClauseModal } from "./modals";
 import { Clause } from "./clauses";
 import Draggable from "react-draggable";
 
@@ -90,18 +90,24 @@ export default function Sat() {
             setFamilies([...families]);
         }, 100);
     }
-
+    
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     })
 
+    function handleKeyCapture(event: KeyboardEvent<HTMLInputElement>) {
+        console.log('I heard an event: ' + event.key );
+    }
+
     return (
-        <div className="p-2 relative" id="sat-container">
+        <div className="p-2 relative outline-none" id="sat-container" onKeyDownCapture={handleKeyCapture} tabIndex={0}>
         <p>This is a page for 3SAT shenanigans</p>
         <p>TODO:</p>
         <ul className="list-disc list-inside">
             <li>Export and import instance</li>
+            <li>Keyboard commands</li>
+            <li>Copy options button on clause (opens small menu; defaults all new terms; lists terms with two buttons: copy term or copy negated term)</li>
             <li>General clause stuff (unknown length, term path analysis)</li>
             <li>Keyboard shortcuts</li>
             <li>Better state control (selecting allows different actions as opposed to the current which is only process)</li>
@@ -123,7 +129,9 @@ export default function Sat() {
             <li>Clean up knownTerms (trim, remove empty, etc)</li>
         </ul>
         <br />
-        <button onClick={() => setShowModal('CreateClause')} className="p-1 outline rounded hover:bg-gray-100">Add clause</button>
+        <button onClick={() => setShowModal('CreateClause')} className="p-1 m-2 outline rounded hover:bg-gray-100">Add clause</button>
+        <br />
+        <button onClick={() => setShowModal('ControlsModal')} className="p-1 m-2 outline rounded hover:bg-gray-100">Help & Controls</button>
         {showModal === 'CreateClause' &&
         <CreateClauseModal 
             onClose={() => setShowModal('')}
@@ -137,6 +145,11 @@ export default function Sat() {
             onAdd={addClause}
             onDelete={DeleteClause}
             clause={pendingClause}
+        />
+        }
+        {showModal === 'ControlsModal' &&
+        <ControlsModal
+            onClose={() => setShowModal('')}
         />
         }
         <br />
