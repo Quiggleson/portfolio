@@ -21,6 +21,6 @@
       "@/*": ["./*"]
     }
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/sat/playground/page.jsx", "app/sat/playground/Droppable.jsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "app/_sat/playground/page.jsx", "app/_sat/playground/Droppable.jsx"],
   "exclude": ["node_modules"]
 }

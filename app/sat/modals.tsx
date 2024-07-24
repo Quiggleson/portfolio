@@ -1,61 +1,77 @@
-'use client';
-import { useState } from "react";
-import { Clause } from "./clauses";
+import { Dispatch, SetStateAction } from "react";
+import { Clause, Connection } from "./satclasses";
+import { createClause, getTermSet, getTermString } from "./satutils";
 
-export function CreateClauseModal({ onClose, onAdd }: { onClose: () => void, onAdd: (clause: Clause) => void }) {
-    const [name, setName] = useState('');
-    const [length, setLength] = useState(0);
-    const [knownTerms, setKnownTerms] = useState('');
+export function EditClauseModal({ clause, close, clauses, setClauses, connections, setConnections }: { clause: Clause, close: () => void, clauses: Clause[], setClauses: Dispatch<SetStateAction<Clause[]>>, connections: Connection[], setConnections: Dispatch<SetStateAction<Connection[]>> }) {
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        console.log({ name, length, knownTerms });
-        var terms = knownTerms.split(',').map((term, i) => term.trim()).filter((term) => term.length > 0);
-        onAdd({ id: crypto.randomUUID(), name, length: length, knownTerms: terms });
-        onClose();
+    function handleSubmit(formData: FormData) {
+        clause.name = formData.get('name') === undefined ? clause.name : formData.get('name')!.toString();
+        clause.length = formData.get('length') === undefined ? clause.length : Number.parseInt(formData.get('length')!.toString());
+        clause.knownTerms = formData.get('knownTerms') === undefined ? clause.knownTerms : getTermSet(formData.get('knownTerms')!.toString());
+        close();
+    }
+
+    function handleDelete(event: React.FormEvent) {
+        setClauses(clauses.filter((c) => c.id !== clause.id));
+        setConnections(connections.filter((connection) => !connection.getClauses().includes(clause)));
     }
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 p-20 bg-purple-com relative">
-                <p className="absolute top-0 mt-5 ml-2">Add Clause</p>
-                <button onClick={onClose} className="absolute top-0 right-0 mt-2 mr-2">X</button>
-                <form onSubmit={handleSubmit} className="">
-                    <div className="p-2">
-                        <label htmlFor="name" className="block">Name</label>
-                        <input
-                            className="rounded pl-1"
-                            id="name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            autoComplete="off"
-                        />
+            <div className="rounded outline outline-2 outline-black-50 bg-purple-com relative max-w-xl min-w-content min-h-1/3">
+                <div className="justify-between flex w-full p-2 h-1/6 bg-purple-light">
+                    <div className="">Edit Clause</div>
+                    <button onClick={close}>Close</button>
+                    {/* <div className="flex flex-col justify-items">
+                <button onClick={close} className="peer">Close</button>
+                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-purple-light peer-hover:border-black"></div>
+            </div> */}
+                </div>
+                <form action={handleSubmit}>
+                    <div className="px-4">
+                        {/* Name */}
+                        <div className="py-2">
+                            <div>Name</div>
+                            <input
+                                className="rounded-lg pl-1"
+                                name="name"
+                                type="text"
+                                defaultValue={clause.name}
+                                autoComplete="off"
+                            />
+                        </div>
+                        {/* Length */}
+                        <div className="py-2">
+                            <div>Length</div>
+                            <input
+                                className="rounded-lg pl-1"
+                                name="length"
+                                type="number"
+                                defaultValue={clause.length}
+                                autoComplete="off"
+                            />
+                        </div>
+                        {/* Known Terms */}
+                        <div className="py-2">
+                            <div>Known Terms</div>
+                            <input
+                                className="rounded-lg pl-1"
+                                name="knownTerms"
+                                type="text"
+                                defaultValue={getTermString(clause)}
+                                autoComplete="off"
+                            />
+                        </div>
                     </div>
-                    <div className="p-2">
-                        <label htmlFor="length" className="block">Length</label>
-                        <input
-                            className="rounded pl-1"
-                            id="length"
-                            type="number"
-                            value={length}
-                            onChange={(e) => setLength(e.target.valueAsNumber)}
-                            autoComplete="off"
-                        />
-                    </div>
-                    <div className="p-2">
-                        <label htmlFor="knownTerms" className="block">Known Terms</label>
-                        <input
-                            className="rounded pl-1"
-                            id="knownTerms"
-                            type="text"
-                            value={knownTerms}
-                            onChange={(e) => setKnownTerms(e.target.value)}
-                            autoComplete="off"
-                        />
-                    </div>
-                    <div className="flex justify-center">
-                        <button type="submit" className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">SUBMIT</button>
+                    <div className="flex p-2">
+                        <button
+                            className="p-2 rounded hover:bg-purple-light"
+                            type="submit"
+                        >Submit</button>
+                        <button 
+                            className="p-2 rounded hover:bg-purple-light"
+                            onClick={handleDelete}
+                        >Delete</button>
                     </div>
                 </form>
             </div>
@@ -63,127 +79,35 @@ export function CreateClauseModal({ onClose, onAdd }: { onClose: () => void, onA
     );
 }
 
-export function EditClauseModal({ onClose, onEdit, onDelete, onAdd, clause }
-    : {
-        onClose: () => void,
-        onEdit: (clause: Clause) => void,
-        onDelete: (clause: Clause) => void,
-        onAdd: (clause: Clause) => void,
-        clause: Clause | undefined
-    }) {
-
-    if (clause === undefined) {
-        onClose();
-        clause = { id: "", name: "", length: 1, knownTerms: [""] }
-    }
-
-    var knownTermStr = '';
-
-    clause.knownTerms.forEach((term, i) => {
-        knownTermStr += term;
-        if (i !== clause.knownTerms.length - 1) { knownTermStr += ', ' };
-    })
-
-    const [name, setName] = useState(clause.name);
-    const [length, setLength] = useState(clause.length);
-    const [knownTerms, setKnownTerms] = useState(knownTermStr);
-
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-        console.log({ name, length, knownTerms });
-        var terms = knownTerms.split(',').map((term, i) => term.trim()).filter((term) => term.length > 0);
-        onEdit({ id: clause.id, name: name, length: length, knownTerms: terms });
-        onClose();
-    }
-
-    const handleDelete = (event: React.FormEvent) => {
-        event.preventDefault();
-        onDelete(clause);
-        onClose();
-    }
-
-    const handleCopy = (event: React.FormEvent) => {
-        event.preventDefault();
-        onAdd({ id: crypto.randomUUID(), name: clause.name, length: clause.length, knownTerms: clause.knownTerms });
-    }
-
-    return (
-        <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 p-20 bg-purple-com relative">
-                <p className="absolute top-0 mt-5 ml-2">Edit Clause</p>
-                <button onClick={onClose} className="absolute top-0 right-0 mt-2 mr-2">X</button>
-                <form onSubmit={handleSubmit} className="">
-                    <div className="p-2">
-                        <label htmlFor="name" className="block">Name</label>
-                        <input
-                            className="rounded pl-1"
-                            id="name"
-                            type="text"
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            autoComplete="off"
-                        />
-                    </div>
-                    <div className="p-2">
-                        <label htmlFor="length" className="block">Length</label>
-                        <input
-                            className="rounded pl-1"
-                            id="length"
-                            type="number"
-                            value={length}
-                            onChange={(e) => setLength(e.target.valueAsNumber)}
-                            autoComplete="off"
-                        />
-                    </div>
-                    <div className="p-2">
-                        <label htmlFor="knownTerms" className="block">Known Terms</label>
-                        <input
-                            className="rounded pl-1"
-                            id="knownTerms"
-                            type="text"
-                            value={knownTerms}
-                            onChange={(e) => setKnownTerms(e.target.value)}
-                            autoComplete="off"
-                        />
-                    </div>
-                    <div className="flex justify-between p-2">
-                        <button type="submit" className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">SUBMIT</button>
-                        <button onClick={handleDelete} className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">DELETE</button>
-                        <button onClick={handleCopy} className="px-5 p-2 hover:bg-purple-hover w-fit border rounded border-black">COPY</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    );
+export function EditConnectionModal() {
+    return (<></>);
 }
 
-export function ControlsModal({ onClose }: { onClose: () => void }) {
+export function ControlsModal({ close }: { close: () => void }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 p-5 bg-purple-com">
-                <div className="max-w-sm">
-                        <div className="flex justify-between">
-                        <p className="mr-10">Help & Controls</p>
-                        <button onClick={onClose} className="">X</button>
-                        </div>
-                    <br />
-                    <p>Prepend relevant command with a number, i,  to repeat that command i times</p>
-                    <div className="grid grid-cols-[max-content_auto]">
-                            <p className="pr-5">[n]</p>
-                            <p>Add new 3-t clause <br/>It will iterate terms by lowercase letter, appending an additional letter after reaching z. Ex/ "a", "b", ... "z", "aa", "ab", ...</p>
-                            <p className="pr-5">[f]</p>
-                            <p>Format clauses <br />Draw relations from parent clauses on the left to child clauses on the right</p>
-                            <p className="pr-5">[:e]</p>
-                            <p>Export <br />Export clauses as json data</p>
-                            <p className="pr-5">[:l]</p>
-                            <p>Load <br />Load json data</p>
-                            <p className="pr-5">[:ni]</p>
-                            <p>New i-terminal clause <br />Add new clause of length i</p>
-                        <div className="mr-5 font-mono text-nowrap">
-                        </div>
-                        <div>
-                        </div>
-                    </div>
+            <div className="rounded outline outline-2 outline-black-50 bg-purple-com relative max-w-xl w-1/3 min-h-1/3">
+                <div className="justify-between flex w-full p-2 h-1/6 bg-purple-light">
+                    <div className="">Help & Controls</div>
+                    <button onClick={close}>Close</button>
+                    {/* <div className="flex flex-col justify-items">
+                <button onClick={close} className="peer">Close</button>
+                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-purple-light peer-hover:border-black"></div>
+            </div> */}
+                </div>
+                <div className="p-2 grid grid-cols-[20%_auto]">
+                    <div>h</div>
+                    <div>Help<br />Open this help modal</div>
+                    <div>n</div>
+                    <div>Creates a new 3-t clause</div>
+                    <div>c</div>
+                    <div>(while held) Copy<br />Copy selected clause</div>
+                    <div>e</div>
+                    <div>(while held) Enter edit mode<br />Select a clause to edit it</div>
+                    <div>Shift</div>
+                    <div>(while held) Enter expansion mode<br />Select clause1 then clause2 to add an expansion connection from clause1 to clause2</div>
+                    <div>Control</div>
+                    <div>(while held) Enter implication mode<br />Select clause1 then clause2 then clause3 to add an implication connection such that clause1 and clause2 share an opposite form term and output clause3</div>
                 </div>
             </div>
         </div>

@@ -1,189 +1,169 @@
 'use client';
 
-import { combineClauses, negateTerm, ReadClause, RenderLines, uniqueClauses, validProcess } from "./clauses";
-import { useState, useEffect, useRef, KeyboardEvent } from "react";
-import { ControlsModal, CreateClauseModal, EditClauseModal } from "./modals";
-import { Clause } from "./clauses";
-import Draggable from "react-draggable";
+import { useState, KeyboardEvent } from "react";
+import { Clause, Connection, Expansion, Implication } from "./satclasses";
+import { createClause } from "./satutils";
+import { RenderClause, RenderClauses, RenderConnection } from "./satcomponents";
+import { ControlsModal, EditClauseModal } from "./modals";
 
-export default function Sat() {
-    const [showModal, setShowModal] = useState('');
+export default function Sat2() {
+    const [connectionMode, setConnectionMode] = useState('');
     const [clauses, setClauses] = useState<Clause[]>([]);
-    const [pendingClause, setPendingClause] = useState<Clause>();
-    const [procClauses, setProcClauses] = useState<Clause[]>([]);
-    const [procReady, setProcReady] = useState(false);
-    const [isDragging, setIsDragging] = useState(false);
-    // parents: [child, parent, parent]
-    const [families, setFamilies] = useState<{parent1: Clause, parent2: Clause, child: Clause}[]>([]);
+    const [connections, setConnections] = useState<Connection[]>([]);
+    const [selected, setSelected] = useState<Clause[]>([]);
+    const [lastLength, setLastLength] = useState(3);
+    const [modal, setModal] = useState('');
 
-    function addClause(clause: Clause) {
-        setClauses(
-            [
-                ...clauses,
-                clause,
-            ]
-        );
-    };
+    function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+        if (modal !== '') {
+            return;
+        }
 
-    function EditClause(clause: Clause) {
-        setClauses(
-            [
-                ...clauses.filter((c) => c.id !== clause.id),
-                clause
-            ]
-        );
-    }
-
-    function DeleteClause(clause: Clause) {
-        setClauses(
-            [
-                ...clauses.filter((c) => c.id !== clause.id)
-            ]
-        );
-    }
-
-    function toggleProcClause(clause: Clause) {
-        if (!isDragging) {
-            if (procClauses.includes(clause)) {
-                setProcClauses([...procClauses.filter((c) => c.id !== clause.id)]);
-                setProcReady(false);
-            } else {
-                setProcClauses([...procClauses, clause]);
-                setProcReady(true);
+        switch (event.key) {
+            case "Shift": {
+                if (connectionMode === '') { setConnectionMode('expansion') };
+                break;
+            }
+            case "Control": {
+                if (connectionMode === '') { setConnectionMode('implication') };
+                break;
+            }
+            case 'e': {
+                if (connectionMode === '') { setConnectionMode('edit') };
+                break;
+            }
+            case 'c': {
+                if (connectionMode === '') {setConnectionMode('copy')};
+                break;
+            }
+            default: {
+                console.log("[INFO] Unrecognized key down: " + event.key);
+                break;
             }
         }
     }
 
-    function processClauses() {
-        var newClauses: Clause[] = [];
-        var newFamilies: {parent1: Clause, parent2: Clause, child: Clause}[] = []
-        procClauses.forEach((clause1) => {
-            procClauses.forEach((clause2) => {
-                if (clause1 !== clause2 && validProcess(clause1, clause2)) {
-                    const newClause = combineClauses(clause1, clause2);
-                    newClauses.push(newClause);
-                    newFamilies.push({parent1: clause1, parent2: clause2, child: newClause});
-                }
-            })
-        });
-        const unique = uniqueClauses([...clauses, ...newClauses]);
-        setClauses(unique);
-        setFamilies([...families, ...newFamilies.filter((family) => unique.includes(family.parent1) && unique.includes(family.parent2) && unique.includes(family.child))])
+    function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
+        if (modal !== '') {
+            return;
+        }
+
+        switch (event.key) {
+            case "Shift": {
+                setConnectionMode('');
+                setSelected([]);
+                break;
+            }
+            case "Control": {
+                setConnectionMode('');
+                setSelected([]);
+                break;
+            }
+            case "e": {
+                setConnectionMode('');
+                setSelected([]);
+                break;
+            }
+            case "n": {
+                setClauses([...clauses, createClause(undefined, 3, [], clauses)]);
+                break;
+            }
+            case "h": {
+                setModal('controls');
+                break;
+            }
+            case 'c': {
+                setConnectionMode('');
+                setSelected([]);
+            }
+            default: {
+                console.log("[INFO] Unrecognized key up " + event.key);
+                break;
+            }
+        }
     }
 
-    function handleStart() {
-        console.log('handle start');
-        setTimeout(() => {
-            setIsDragging(true);
-        }, 100);
-    }
+    function handleClick(clause: Clause) {
+        if (modal !== '' || connectionMode === '') {
+            return;
+        }
 
-    function handleStop() {
-        console.log('handle stop');
-        setTimeout(() => {
-            setIsDragging(false);
-        }, 100);
-    }
-
-    const handleScroll = () => {
-        setTimeout(() => {
-            setFamilies([...families]);
-        }, 100);
-    }
-    
-    useEffect(() => {
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    })
-
-    function handleKeyCapture(event: KeyboardEvent<HTMLInputElement>) {
-        console.log('I heard an event: ' + event.key );
+        console.log('I got clicked! ' + clause.id);
+        if (!selected.includes(clause)) {
+            setSelected([...selected, clause]);
+        }
+        if (connectionMode === 'expansion' && selected.length === 1) {
+            setConnections([...connections, new Expansion(selected[0], clause)]);
+            setConnectionMode('');
+            setSelected([]);
+        }
+        else if (connectionMode === 'implication' && selected.length === 2) {
+            setConnections([...connections, new Implication(selected[0], selected[1], clause)])
+            setConnectionMode('');
+            setSelected([]);
+        }
+        else if (connectionMode === 'edit' && selected.length === 0) {
+            setModal('editclause');
+        } 
+        else if (connectionMode === 'copy' && selected.length === 0) {
+            setClauses([...clauses, createClause(undefined, clause.length, Array.from(clause.knownTerms), clauses)]);
+            setSelected([]);
+        }
     }
 
     return (
-        <div className="p-2 relative outline-none" id="sat-container" onKeyDownCapture={handleKeyCapture} tabIndex={0}>
-        <p>This is a page for 3SAT shenanigans</p>
-        <p>TODO:</p>
-        <ul className="list-disc list-inside">
-            <li>Export and import instance</li>
-            <li>Keyboard commands</li>
-            <li>Copy options button on clause (opens small menu; defaults all new terms; lists terms with two buttons: copy term or copy negated term)</li>
-            <li>General clause stuff (unknown length, term path analysis)</li>
-            <li>Keyboard shortcuts</li>
-            <li>Better state control (selecting allows different actions as opposed to the current which is only process)</li>
-            <li>Add clause count</li>
-            <li>Separate derived and given clauses</li>
-            <li>Process all button</li>
-            <li>Make knownTerms a set</li>
-            <li>Clean up lines (the order of clauses is finicky)</li>
-            <li>Clean up diagram</li>
-        </ul>
-        <p>Done:</p>
-        <ul className="list-disc list-inside">
-            <li>Lines</li>
-            <li>Drag clauses</li>
-            <li>Click two clauses to combine them</li>
-            <li>Add and Display clause</li>
-            <li>CRUD operations on clauses</li>
-            <li>Copy clause</li>
-            <li>Clean up knownTerms (trim, remove empty, etc)</li>
-        </ul>
-        <br />
-        <button onClick={() => setShowModal('CreateClause')} className="p-1 m-2 outline rounded hover:bg-gray-100">Add clause</button>
-        <br />
-        <button onClick={() => setShowModal('ControlsModal')} className="p-1 m-2 outline rounded hover:bg-gray-100">Help & Controls</button>
-        {showModal === 'CreateClause' &&
-        <CreateClauseModal 
-            onClose={() => setShowModal('')}
-            onAdd={addClause}    
-        />
-        }
-        {showModal === 'EditClause' &&
-        <EditClauseModal 
-            onClose={() => setShowModal('')}
-            onEdit={EditClause}
-            onAdd={addClause}
-            onDelete={DeleteClause}
-            clause={pendingClause}
-        />
-        }
-        {showModal === 'ControlsModal' &&
-        <ControlsModal
-            onClose={() => setShowModal('')}
-        />
-        }
-        <br />
-        <ul className="list-disc">
-            {clauses.map((clause, i) => 
-            <li key={clause.id} className="p-2 flex w-fit">
-                <Draggable
-                    onStart={handleStart}
-                    onStop={handleStop}
-                >
-                    <div id={clause.id}>
-                        <button onClick={() => toggleProcClause(clause)}>
-                        <ReadClause 
-                            clause={clause}
-                            selected={procClauses.includes(clause)}
+        <div className="outline-none px-2" onKeyDown={handleKeyDown} onKeyUpCapture={handleKeyUp} tabIndex={0}>
+            <div>
+                Click me to start listening for commands
+            </div>
+            <button
+                className="outline rounded px-2 hover:bg-purple-light"
+                onClick={() => setModal('help')}
+            >Help</button>
+            <div>
+                Clauses:
+                <RenderClauses 
+                    clauses={clauses}
+                    handleClick={handleClick}
+                />
+            </div>
+            <div>
+                Connections:
+                {connections.map((connection, i) =>
+                    <div key={connection.id + "div"}>
+                        <RenderConnection
+                            key={connection.id}
+                            connection={connection}
                         />
-                        </button>
-                        <button 
-                            className="rounded border border-black px-1 mx-1"
-                            onClick={() => {
-                                setPendingClause(clauses.filter((c) => c.id === clause.id)[0]);
-                                setShowModal('EditClause');
-                        }}>Edit</button>
                     </div>
-                </Draggable>
-            </li>
-            )}
-        </ul>
-        {procReady &&
-        <button onClick={processClauses} className="rounded border-2 border-black p-2 hover:bg-gray-400">PROCESS</button>
-        }
-        <RenderLines 
-            families={families}
-        />
+                )}
+            </div>
+            <div>
+                Selected:
+                {selected.map((clause, i) =>
+                    <div key={clause.id + "selecteddiv"}>
+                        <RenderClause
+                            key={clause.id}
+                            clause={clause}
+                        />
+                    </div>
+                )}
+            </div>
+            <div>Mode: {connectionMode}</div>
+            {modal === 'editclause' &&
+                <EditClauseModal
+                    clause={selected[0]}
+                    close={() => { setModal(''); setSelected([]); setConnectionMode(''); }}
+                    clauses={clauses}
+                    setClauses={setClauses}
+                    connections={connections}
+                    setConnections={setConnections}
+                />}
+            {modal === 'help' &&
+                <ControlsModal 
+                    close={() => {setModal(''); setSelected([]); setConnectionMode(''); }}
+                />
+            }
         </div>
     );
 }

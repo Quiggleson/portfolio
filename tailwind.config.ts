@@ -24,9 +24,20 @@ const config: Config = {
             transform: 'translateY(0)',
           },
         },
+        fadeInUnderline: {
+          '0%': {
+            width: "10%",
+            transform: 'scaleX(2)'
+          },
+          '100%': {
+            width: "100%",
+            transform: 'scaleX(1)'
+          }
+        }
       },
       animation: {
         fadeInBottom: 'fadeInBottom 1s ease-out',
+        fadeInUnderline: 'fadeInUnderline .5s'
       },
       colors: {
         'purple-com': '#7D26CD',
