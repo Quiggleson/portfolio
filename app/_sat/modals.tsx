@@ -170,7 +170,7 @@ export function ControlsModal({ onClose }: { onClose: () => void }) {
                     <p>Prepend relevant command with a number, i,  to repeat that command i times</p>
                     <div className="grid grid-cols-[max-content_auto]">
                             <p className="pr-5">[n]</p>
-                            <p>Add new 3-t clause <br/>It will iterate terms by lowercase letter, appending an additional letter after reaching z. Ex/ "a", "b", ... "z", "aa", "ab", ...</p>
+                            <p>Add new 3-t clause <br/>It will iterate terms by lowercase letter, appending an additional letter after reaching z. Ex/ &quot;a&quot;, &quot;b&quot;, ... &quot;z&quot;, &quot;aa&quot;, &quot;ab&quot;, ...</p>
                             <p className="pr-5">[f]</p>
                             <p>Format clauses <br />Draw relations from parent clauses on the left to child clauses on the right</p>
                             <p className="pr-5">[:e]</p>
