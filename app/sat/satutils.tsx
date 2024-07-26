@@ -1,4 +1,5 @@
-import { Clause, Implication } from "./satclasses";
+import { Dispatch, SetStateAction } from "react";
+import { Clause, Connection, Implication, Instance } from "./satclasses";
 
 export function createClause(name: string | undefined, length: number, knownTerms: string[], clauses: Clause[]) {
     const newName = name === undefined ? getNextName(clauses) : name;
@@ -39,4 +40,13 @@ export function getTermSet(termString: string) {
     })
 
     return knownTerms;
+}
+
+export function setInstance(instance: Instance, setClauses: Dispatch<SetStateAction<Clause[]>>, setConnections: Dispatch<SetStateAction<Connection[]>>) {
+    var clauses: Clause[] = [];
+    instance.clauses.forEach((clause) => {
+        clauses.push(Clause.from(clause));
+    })
+    setClauses(clauses);
+    setConnections(instance.connections);
 }

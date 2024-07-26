@@ -4,11 +4,25 @@ export class Clause{
     id: string;
     name: string;
 
-    constructor(length: number, knownTerms: Set<string>, name: string) {
+    constructor(length: number, knownTerms: Set<string>, name: string, id?: string) {
         this.length = length;
         this.knownTerms = knownTerms;
-        this.id = crypto.randomUUID();
+        this.id = id === undefined ? crypto.randomUUID() : id;
         this.name = name;
+    }
+
+    toJSON() {
+        return {
+            name: this.name,
+            id: this.id,
+            length: this.length,
+            knownTerms: Array.from(this.knownTerms),
+        }
+    }
+
+    // Accepts knownTerms as list
+    static from(json: any) {
+        return new Clause(json.length, new Set(json.knownTerms), json.name, json.id);
     }
 }
 
@@ -21,6 +35,11 @@ export interface Connection {
     type: ConnectionType
     id: string
     getClauses: () => Clause[]
+}
+
+export interface Instance {
+    clauses: Clause[],
+    connections: Connection[]
 }
 
 export class Implication implements Connection {
