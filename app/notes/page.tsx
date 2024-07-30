@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import SatRefactor from "./satrefactor";
+import SatProcessing from "./satprocessing";
 
 export default function Notes() {
 
@@ -47,6 +48,10 @@ export default function Notes() {
                 <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('2')}>+</button>SAT Refactor</h1>
                 {sections.includes('2') &&
                     <SatRefactor />
+                }
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('3')}>+</button>Process Clauses</h1>
+                {sections.includes('3') &&
+                    <SatProcessing />
                 }
             </div>
         </div>

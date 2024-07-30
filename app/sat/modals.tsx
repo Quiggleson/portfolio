@@ -1,8 +1,8 @@
 import { Dispatch, SetStateAction } from "react";
-import { Clause, Connection } from "./satclasses";
-import { createClause, getTermSet, getTermString } from "./satutils";
+import { Clause, Connection, Expansion, Implication } from "./satclasses";
+import { getTermSet, getTermString } from "./satutils";
 
-export function EditClauseModal({ clause, close, clauses, setClauses, connections, setConnections }: { clause: Clause, close: () => void, clauses: Clause[], setClauses: Dispatch<SetStateAction<Clause[]>>, connections: Connection[], setConnections: Dispatch<SetStateAction<Connection[]>> }) {
+export function EditClauseModal({ clause, close, clauses, setClauses, connections, setConnections }: { clause: Clause, close: () => void, clauses: Clause[], setClauses: Dispatch<SetStateAction<Clause[]>>, connections: Connection[], setConnections: Dispatch<SetStateAction<Connection[]>>}) {
 
     function handleSubmit(formData: FormData) {
         clause.name = formData.get('name') === undefined ? clause.name : formData.get('name')!.toString();
@@ -79,10 +79,6 @@ export function EditClauseModal({ clause, close, clauses, setClauses, connection
     );
 }
 
-export function EditConnectionModal() {
-    return (<></>);
-}
-
 export function ControlsModal({ close }: { close: () => void }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
@@ -104,10 +100,18 @@ export function ControlsModal({ close }: { close: () => void }) {
                     <div>(while held) Copy<br />Copy selected clause</div>
                     <div>e</div>
                     <div>(while held) Enter edit mode<br />Select a clause to edit it</div>
+                    <div>t</div>
+                    <div>(While held) Enter new term mode<br />Click a clause to add a new term</div>
                     <div>Shift</div>
                     <div>(while held) Enter expansion mode<br />Select clause1 then clause2 to add an expansion connection from clause1 to clause2</div>
                     <div>Control</div>
                     <div>(while held) Enter implication mode<br />Select clause1 then clause2 then clause3 to add an implication connection such that clause1 and clause2 share an opposite form term and output clause3</div>
+                    <div>Export/ Import</div>
+                    <div>Export or import the current instance in json format</div>
+                    <div>Copy Instance</div>
+                    <div>Create a new instance based on the current one</div>
+                    <div className="text-sm">Process Expansion</div>
+                    <div>(In progress) Add new instances based on possible term paths</div>
                 </div>
             </div>
         </div>

@@ -1,8 +1,8 @@
 'use client';
 
 import { useState, KeyboardEvent, ChangeEvent } from "react";
-import { Clause, Connection, Expansion, Implication } from "./satclasses";
-import { createClause, setInstance } from "./satutils";
+import { Clause, Connection, ConnectionType, Expansion, Implication, Instance } from "./satclasses";
+import { createClause, processExpansions, setInstance } from "./satutils";
 import { RenderClause, RenderClauses, RenderConnection } from "./satcomponents";
 import { ControlsModal, EditClauseModal } from "./modals";
 
@@ -13,6 +13,8 @@ export default function Sat2() {
     const [selected, setSelected] = useState<Clause[]>([]);
     const [lastLength, setLastLength] = useState(3);
     const [modal, setModal] = useState('');
+    const [instances, setInstances] = useState<Instance[]>([new Instance([], [])]);
+    const [curInstanceIdx, setCurInstanceIdx] = useState(0);
 
     function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
         if (modal !== '') {
@@ -35,6 +37,9 @@ export default function Sat2() {
             case 'c': {
                 if (connectionMode === '') { setConnectionMode('copy') };
                 break;
+            }
+            case 't': {
+                if (connectionMode === '') {setConnectionMode('newTerm')};
             }
             default: {
                 console.log("[INFO] Unrecognized key down: " + event.key);
@@ -76,6 +81,10 @@ export default function Sat2() {
                 setConnectionMode('');
                 setSelected([]);
             }
+            case 't': {
+                setConnectionMode('');
+                setSelected([]);
+            }
             default: {
                 console.log("[INFO] Unrecognized key up " + event.key);
                 break;
@@ -108,6 +117,9 @@ export default function Sat2() {
         else if (connectionMode === 'copy' && selected.length === 0) {
             setClauses([...clauses, createClause(undefined, clause.length, Array.from(clause.knownTerms), clauses)]);
             setSelected([]);
+        } else if (connectionMode === 'newTerm') {
+            instances[curInstanceIdx].getClause(clause.id)?.addTerm(instances[curInstanceIdx]);
+            setSelected([]);
         }
     }
 
@@ -137,18 +149,42 @@ export default function Sat2() {
         }
     }
 
+    function switchInstance(newInstanceIdx: number) {
+        instances[curInstanceIdx].clauses = clauses;
+        instances[curInstanceIdx].connections = connections;
+        setClauses(instances[newInstanceIdx].clauses);
+        setConnections(instances[newInstanceIdx].connections);
+        setCurInstanceIdx(newInstanceIdx);
+    }
+
+    function copyInstance() {
+        switchInstance(curInstanceIdx);
+        const newInstance = instances[curInstanceIdx].copy();
+        setInstances([...instances, newInstance]);
+    }
+
     return (
         <div className="outline-none px-2" onKeyDown={handleKeyDown} onKeyUpCapture={handleKeyUp} tabIndex={0}>
             <div>
-                Click anywhere above the rendered content to start listening for commands (it&apos;s being finicky sorry)
+                Click anywhere above the rendered content to start listening for commands (it&apos;s being finicky sorry)<br />
+                WARNING: when using various modes, you sometimes have to click the instance tab of the current instance to reset the clauses and whatnot. Instances are new and I&apos;m currently in the process of making actions interface with the instances rather than a single list of clauses
             </div>
             <button
                 className="block outline rounded px-2 hover:bg-purple-light my-2"
                 onClick={() => setModal('help')}
             >Help</button>
             <p>Import</p>
-            <input type="file" className="block outline rounded px-2 hover:bg-purple-light my-2" onChange={uploadFile} />
+            <input type="file" className="block outline rounded hover:bg-purple-light my-2 w-fit" onChange={uploadFile} />
             <button className="block outline rounded px-2 hover:bg-purple-light my-2" onClick={downloadJSON}>Export</button>
+            <button className="block outline rounded px-2 hover:bg-purple-light my-2" onClick={() => processExpansions(instances[curInstanceIdx].connections.filter((c) => (c.type === ConnectionType.expansion)) as Expansion[], instances[curInstanceIdx], instances, setInstances)}>Process Expansions</button>
+            <button className="block outline rounded px-2 hover:bg-purple-light my-2" onClick={copyInstance}>Copy Instance</button>
+            <div className="flex">
+                {instances.map((instance, i) => 
+                <button key={i} className={"outline rounded-t px-2 mx-1 "  + (curInstanceIdx === i ? "bg-purple-light" : "hover:bg-purple-light")} onClick={() => switchInstance(i)}>
+                    Instance {i}
+                </button>
+                )}
+            </div>
             <div>
                 Clauses:
                 <RenderClauses
