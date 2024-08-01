@@ -55,8 +55,11 @@ export function setInstance(instance: Instance, setClauses: Dispatch<SetStateAct
 // TODO currently it makes a new instance for each expansion, but want to add what must exist first and then add new possible instances
 export function processExpansions(expansions: Expansion[], instance: Instance, instances: Instance[], setInstances: Dispatch<SetStateAction<Instance[]>>) {
     
+    console.log('Processing expansions in instance: ' + JSON.stringify(instance));
+
     var newInstances: Instance[] = [];
 
+    // Add terms that are guaranteed first
     expansions.forEach((expansion) => {
         // Check lengths work
         if (expansion.input.length >= expansion.output.length) {
@@ -68,6 +71,10 @@ export function processExpansions(expansions: Expansion[], instance: Instance, i
             console.log('[INFO] Adding ' + term + ' to clause ' + expansion.output.name);
             expansion.output.knownTerms.add(term);
         })
+    });
+
+    // Add new possible instance
+    expansions.forEach((expansion) => {
 
         // Iterate terms in output that do not exist in input. Create a new instance for each and add all terms in output to input except selected term
         expansion.output.knownTerms.difference(expansion.input.knownTerms).forEach((term, term1, knownTerms) => {
@@ -78,9 +85,10 @@ export function processExpansions(expansions: Expansion[], instance: Instance, i
             const localExp = newInstance.getConnection(expansion.id) as Expansion;
             localExp.output.knownTerms.difference(new Set(term)).forEach((addTerm) => {
                 console.log('Adding ' + addTerm + ' to clause ' + expansion.input.name);
-                newInstance.getClause(localExp.input.id)?.knownTerms.add(addTerm);
+                // newInstance.getClause(localExp.input.id)?.knownTerms.add(addTerm);
                 localExp.input.knownTerms.add(addTerm);
             })
+            // processExpansions(newInstance.getExpansions(), newInstance, [...instances, newInstance], setInstances);
             newInstances.push(newInstance);
             console.log('Pushing new instance: ' + JSON.stringify(newInstance));
         });

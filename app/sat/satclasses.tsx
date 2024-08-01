@@ -102,6 +102,10 @@ export class Instance {
         console.log('terms: ' + JSON.stringify(Array.from(terms)));
         return terms;
     }
+
+    getExpansions() {
+        return this.connections.filter((con) => con.type === ConnectionType.expansion) as Expansion[];
+    }
 }
 
 export class Implication implements Connection {
