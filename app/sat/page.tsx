@@ -170,17 +170,19 @@ export default function Sat2() {
                 WARNING: when using various modes, you sometimes have to click the instance tab of the current instance to reset the clauses and whatnot. Instances are new and I&apos;m currently in the process of making actions interface with the instances rather than a single list of clauses
             </div>
             <button
-                className="block outline rounded px-2 hover:bg-purple-light my-2"
+                className="block outline rounded px-2 hover:bg-button-hover my-2"
                 onClick={() => setModal('help')}
             >Help</button>
             <p>Import</p>
-            <input type="file" className="block outline rounded hover:bg-purple-light my-2 w-fit" onChange={uploadFile} />
-            <button className="block outline rounded px-2 hover:bg-purple-light my-2" onClick={downloadJSON}>Export</button>
-            <button className="block outline rounded px-2 hover:bg-purple-light my-2" onClick={() => processExpansions(instances[curInstanceIdx].connections.filter((c) => (c.type === ConnectionType.expansion)) as Expansion[], instances[curInstanceIdx], instances, setInstances)}>Process Expansions</button>
-            <button className="block outline rounded px-2 hover:bg-purple-light my-2" onClick={copyInstance}>Copy Instance</button>
+            <label htmlFor="file-upload" className="block outline rounded hover:bg-button-hover my-2 w-fit px-2">Upload File</label>
+            <input id="file-upload" type="file" className="hidden" onChange={uploadFile} />
+            {/* <input id="file-upload" type="file" className="block outline rounded hover:bg-button-hover my-2 w-fit" onChange={uploadFile} /> */}
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={downloadJSON}>Export</button>
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => processExpansions(instances[curInstanceIdx].connections.filter((c) => (c.type === ConnectionType.expansion)) as Expansion[], instances[curInstanceIdx], instances, setInstances)}>Process Expansions</button>
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={copyInstance}>Copy Instance</button>
             <div className="flex">
                 {instances.map((instance, i) => 
-                <button key={i} className={"outline rounded-t px-2 mx-1 "  + (curInstanceIdx === i ? "bg-purple-light" : "hover:bg-purple-light")} onClick={() => switchInstance(i)}>
+                <button key={i} className={"outline rounded-t px-2 mx-1 "  + (curInstanceIdx === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => switchInstance(i)}>
                     Instance {i}
                 </button>
                 )}

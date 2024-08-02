@@ -42,7 +42,8 @@ const config: Config = {
       colors: {
         'purple-com': '#7D26CD',
         'purple-hover': '#ddbbff',
-        'purple-light': '#a868e3'
+        'purple-light': '#a868e3',
+        'button-hover': '#ff8700',
       }
     },
   },

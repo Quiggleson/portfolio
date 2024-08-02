@@ -3,7 +3,17 @@
 @tailwind utilities;
 
 body {
-    background: #7d26cd;
+    /* background: #7d26cd; */
+    background: #000;
+    color: #fff;
+}
+
+.outline {
+    outline-color: #555;
+}
+
+html {
+    scrollbar-gutter: stable; /* This property helps to prevent layout shifts */
 }
 
 ::-webkit-scrollbar {

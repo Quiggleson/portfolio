@@ -3,7 +3,7 @@
 // Displays the clause
 export function ReadClause({ clause, selected }: {clause: Clause, selected: boolean}) {
     return (
-        <div className={selected ? "bg-purple-hover rounded border border-black w-fit" : "bg-purple-com rounded border border-black w-fit" }>
+        <div className={selected ? "bg-button-hover rounded border border-black w-fit" : "bg-inherit rounded border border-black w-fit" }>
         {/* <div className="bg-gray-100 rounded border w-fit"> */}
             <span className="p-2">Name: {clause.name}</span>
             <span className="p-2">Length: {clause.length}</span>

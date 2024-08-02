@@ -18,13 +18,13 @@ export function EditClauseModal({ clause, close, clauses, setClauses, connection
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 bg-purple-com relative max-w-xl min-w-content min-h-1/3">
-                <div className="justify-between flex w-full p-2 h-1/6 bg-purple-light">
+            <div className="rounded outline outline-2 outline-black-50 bg-inherit relative max-w-xl min-w-content min-h-1/3">
+                <div className="justify-between flex w-full p-2 h-1/6">
                     <div className="">Edit Clause</div>
                     <button onClick={close}>Close</button>
                     {/* <div className="flex flex-col justify-items">
                 <button onClick={close} className="peer">Close</button>
-                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-purple-light peer-hover:border-black"></div>
+                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-button-hover peer-hover:border-black"></div>
             </div> */}
                 </div>
                 <form action={handleSubmit}>
@@ -65,11 +65,11 @@ export function EditClauseModal({ clause, close, clauses, setClauses, connection
                     </div>
                     <div className="flex p-2">
                         <button
-                            className="p-2 rounded hover:bg-purple-light"
+                            className="p-2 rounded hover:bg-button-hover"
                             type="submit"
                         >Submit</button>
                         <button 
-                            className="p-2 rounded hover:bg-purple-light"
+                            className="p-2 rounded hover:bg-button-hover"
                             onClick={handleDelete}
                         >Delete</button>
                     </div>
@@ -82,13 +82,13 @@ export function EditClauseModal({ clause, close, clauses, setClauses, connection
 export function ControlsModal({ close }: { close: () => void }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="rounded outline outline-2 outline-black-50 bg-purple-com relative max-w-xl w-1/3 min-h-1/3">
-                <div className="justify-between flex w-full p-2 h-1/6 bg-purple-light">
+            <div className="rounded outline outline-2 outline-black-50 bg-inherit relative max-w-xl w-1/3 min-h-1/3">
+                <div className="justify-between flex w-full p-2 h-1/6">
                     <div className="">Help & Controls</div>
                     <button onClick={close}>Close</button>
                     {/* <div className="flex flex-col justify-items">
                 <button onClick={close} className="peer">Close</button>
-                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-purple-light peer-hover:border-black"></div>
+                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-button-hover peer-hover:border-black"></div>
             </div> */}
                 </div>
                 <div className="p-2 grid grid-cols-[20%_auto]">
