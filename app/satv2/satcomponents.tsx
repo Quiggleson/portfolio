@@ -12,16 +12,11 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
             {Array(cols).fill(1).map((value, i) =>
                 <div key={i}>
                     <div key={i} className="p-2">Length {i + 1}</div>
-                    {clauses.filter((clause) => clause.length === i + 1).map((clause, i) =>
+                    {clauses.sort((a, b) => a.name.localeCompare(b.name)).filter((clause) => clause.length === i + 1).map((clause, i) =>
                         <div key={i}>
                             <button key={clause.id + i} className="m-2 p-2 outline rounded" onClick={() => handleClick(clause)}>
                                 <div>Name: {clause.name}</div>
                                 <div>{getTermString(clause)}</div>
-                                {/* <div>
-                                    {Array.from(clause.knownTerms).map((term, i) =>
-                                        <p>{getTermString(clause)}</p>
-                                    )}
-                                </div> */}
                             </button>
                         </div>
                     )}
