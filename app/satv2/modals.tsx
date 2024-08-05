@@ -9,7 +9,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
         console.log('setting clause ' + JSON.stringify(clause) + " to temp clause " + JSON.stringify(tempClause));
-        instance.setClause(tempClause);
+        clause.update(tempClause);
         close();
     }
 
@@ -56,6 +56,18 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                 onChange={(e) => { if (e.target.value) { tempClause.length = Number.parseInt(e.target.value) } }}
                             />
                         </div>
+                         {/* Column */}
+                         <div className="py-2">
+                            <div>Column</div>
+                            <input
+                                className="rounded-lg pl-1"
+                                name="column"
+                                type="number"
+                                defaultValue={clause.col}
+                                autoComplete="off"
+                                onChange={(e) => { if (e.target.value) { tempClause.col = Number.parseInt(e.target.value) } }}
+                            />
+                        </div>
                         {/* Known Terms */}
                         <div className="py-2">
                             <div>Known Terms</div>
@@ -88,7 +100,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                 </div>
                             )}
 
-                            <button className="rounded-xl outline px-2 mt-2" onClick={() => { tempClause.addTerm(instance); forceUpdate((n) => n + 1) }} type="button">+</button>
+                            <button className="rounded-xl outline px-2 mt-2" onClick={() => { tempClause.addTerm(instance, tempClause.getTermNames()); forceUpdate((n) => n + 1) }} type="button">+</button>
                         </div>
                     </div>
                     <div className="flex p-2">

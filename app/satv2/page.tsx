@@ -3,7 +3,7 @@
 import { useState, KeyboardEvent, ChangeEvent } from "react";
 import { Clause, Connection, ConnectionType, Expansion, Implication, Instance, TermSet } from "./satclasses";
 import { createClause, setInstance } from "./satutils";
-import { RenderClause, RenderClauses, RenderConnection } from "./satcomponents";
+import { RenderClause, RenderClauses, RenderConnection, RenderConnections } from "./satcomponents";
 import { ControlsModal, EditClauseModal } from "./modals";
 
 export default function Sat2() {
@@ -201,6 +201,9 @@ export default function Sat2() {
                     close={() => { setModal(''); setSelected([]); setConnectionMode(''); }}
                 />
             }
+            <RenderConnections 
+                connections={instances[curInstanceIdx].connections}
+            />
         </div>
     );
 }

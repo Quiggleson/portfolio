@@ -3,12 +3,14 @@ export class Clause {
     knownTerms: Set<TermSet>;
     id: string;
     name: string;
+    col: number;
 
-    constructor(length: number, knownTerms: Set<TermSet>, name: string, id?: string) {
+    constructor(length: number, knownTerms: Set<TermSet>, name: string, id?: string, col?: number) {
         this.length = length;
         this.knownTerms = knownTerms;
         this.id = id === undefined ? crypto.randomUUID() : id;
         this.name = name;
+        this.col = col === undefined ? 2 : col;
     }
 
     toJSON() {
@@ -16,6 +18,7 @@ export class Clause {
             name: this.name,
             id: this.id,
             length: this.length,
+            columns: this.col,
             knownTerms: Array.from(this.knownTerms),
         }
     }
@@ -31,11 +34,16 @@ export class Clause {
         this.knownTerms.forEach((term) => {
             knownTermsCopy.add(term);
         })
-        return new Clause(this.length, knownTermsCopy, this.name, this.id);
+        return new Clause(this.length, knownTermsCopy, this.name, this.id, this.col);
     }
 
-    addTerm(instance: Instance) {
-        const usedTerms = instance.getTermNames();
+    addTerm(instance: Instance, used?: Set<string>) {
+        var usedTerms: Set<string>;
+        if (used) {
+            usedTerms = instance.getTermNames().union(used);
+        } else {
+            usedTerms = instance.getTermNames();
+        }
         const nextTerm = ['α', 'β', 'δ', 'ζ', 'η', 'λ', 'μ', 'π'];
         var i = 0;
         while (i < nextTerm.length && usedTerms.has(nextTerm[i])) {i++};
@@ -51,19 +59,21 @@ export class Clause {
         return match.length === 0 ? undefined : match[0];
     }
 
-    // addTerm(instance: Instance) {
-    //     const usedTerms = instance.getTerms();
-    //     console.log('checking instance: ' + JSON.stringify(instance));
-    //     console.log('used terms: ' + JSON.stringify(Array.from(usedTerms)));
-    //     const nextTerm = 'abcdefghijklmnopqrstuvwxyz';
-    //     var i = 0;
-    //     while (i < 26 && usedTerms.has(nextTerm[i])) { i++ };
-    //     if (i === 26) {
-    //         this.knownTerms.add('a');
-    //     } else {
-    //         this.knownTerms.add(nextTerm[i]);
-    //     }
-    // }
+    getTermNames() {
+        var names = new Set<string>();
+        this.knownTerms.forEach((term) => {
+            names.add(term.name);
+        })
+        return names;
+    }
+
+    update(clause: Clause) {
+        this.name = clause.name;
+        this.knownTerms = clause.knownTerms;
+        this.length = clause.length;
+        this.id = clause.id;
+        this.col = clause.col;
+    }
 }
 
 export class TermSet {
@@ -127,11 +137,9 @@ export class Instance {
     }
 
     getTermNames() {
-        var terms = new Set<String>();
+        var terms = new Set<string>();
         this.clauses.forEach((clause) => {
-            clause.knownTerms.forEach((term) => {
-                terms.add(term.name);
-            })
+            terms = terms.union(clause.getTermNames())
         })
         console.log('terms: ' + JSON.stringify(Array.from(terms)));
         return terms;
@@ -139,11 +147,6 @@ export class Instance {
 
     getExpansions() {
         return this.connections.filter((con) => con.type === ConnectionType.expansion) as Expansion[];
-    }
-
-    setClause(clause: Clause) {
-        this.clauses = [...this.clauses.filter((c) => c.id !== clause.id)];
-        this.clauses.push(clause);
     }
 }
 
