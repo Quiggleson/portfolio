@@ -4,6 +4,7 @@ import { useState } from "react";
 import SatRefactor from "./satrefactor";
 import SatProcessing from "./satprocessing";
 import LargeClause from "./largeclause";
+import ClauseRedesign from "./clauseredesign";
 
 export default function Notes() {
 
@@ -57,6 +58,10 @@ export default function Notes() {
                 <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('4')}>+</button>Large Implication Graph Example</h1>
                 {sections.includes('4') &&
                     <LargeClause />
+                }
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('5')}>+</button>Clause Redesign</h1>
+                {sections.includes('5') &&
+                    <ClauseRedesign />
                 }
             </div>
         </div>

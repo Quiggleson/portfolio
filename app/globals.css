@@ -8,6 +8,10 @@ body {
     color: #fff;
 }
 
+input {
+    color: #000;
+}
+
 .outline {
     outline-color: #555;
 }

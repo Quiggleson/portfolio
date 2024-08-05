@@ -76,7 +76,18 @@ export default function SatProcessing(): ReactNode{
                     <li>Since i is not in &alpha; and -i is not in &beta;, &alpha; = &beta; = &delta; and we definitely already have E</li>
                 </ul>
             </ul>
-            This proves we never have to process an n-terminal clause. However, this proof is ezpez because the first half of the graph is simple expansion from each clause to the next. The fact that we shortcut this expansion in case 1) makes it rather difficult to generalize this. In fact, there is a case where it&apos;s proven that if we only have n-2 terminal clauses and we go up to n-1-terminal clauses (by expansion and/or implication), then there is no way to shortcut an existing implication. I am quite hoping that with n-3 to n-2 to n-1 to n-2 to n-3, there is a way to shortcut the n-1, regardless of if its n-2 to n-1 by simple expansion or if it&apos;s n-2 to n-1 by implication. They key to this lies in the fact that there&apos;s another n-2 to n-3 reduction and the terms get quite restricted which may allow for a cap on the length of the output clauses.
+            <p>This proves we never have to process an n-terminal clause. However, this proof is ezpez because the first half of the graph is simple expansion from each clause to the next. The fact that we shortcut this expansion in case 1) makes it rather difficult to generalize this. In fact, there is a case where it&apos;s proven that if we only have n-2 terminal clauses and we go up to n-1-terminal clauses (by expansion and/or implication), then there is no way to shortcut an existing implication. I am quite hoping that with n-3 to n-2 to n-1 to n-2 to n-3, there is a way to shortcut the n-1, regardless of if its n-2 to n-1 by simple expansion or if it&apos;s n-2 to n-1 by implication. They key to this lies in the fact that there&apos;s another n-2 to n-3 reduction and the terms get quite restricted which may allow for a cap on the length of the output clauses.</p>
+            <p>After further thinking, here&apos;s the satutils functions I&apos;m thinking of:</p>
+            <div className="pl-8">
+                <p>addOppFormTerms()</p>
+                <p className="pl-8">Given an implication, add another list of opposite form terms. This will be just one level deep and won&apos;t trace back up the expansion</p>
+                <p>placeOppFormTerms()</p>
+                <p className="pl-8">After adding the opposite form terms, make a new instance for each possibility.</p>
+                <p>newExpansion()</p>
+                <p className="pl-8">Given existing clause, add expanded clause. In the example, clicking A in this mode would add C to the instance.</p>
+                <p>Housekeeping</p>
+                <p className="pl-8">When creating a new clause, add a greek letter to indicate the known terms set. We&apos;ll know the length of the clause, but not necessarily what&apos;s in one.</p>
+            </div>
             <svg className="absolute top-0 left-0 h-full w-full -z-10">
                 <line 
                     x1={clauseList.current[0].right}

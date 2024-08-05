@@ -6,6 +6,7 @@ export default function TopNav() {
         // Warning: home will link incorrectly on github pages
         {name: 'Localhost Home', link: '/'},
         {name: '3SAT', link: 'sat'},
+        {name: 'SATv2', link: 'satv2'},
         {name: 'GH Pages Home', link: '/portfolio'},
         {name: 'Notes', link: 'notes'},
     ];
