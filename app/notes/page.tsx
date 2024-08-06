@@ -5,6 +5,7 @@ import SatRefactor from "./satrefactor";
 import SatProcessing from "./satprocessing";
 import LargeClause from "./largeclause";
 import ClauseRedesign from "./clauseredesign";
+import DownloadExample from "./downloadexample";
 
 export default function Notes() {
 
@@ -62,6 +63,10 @@ export default function Notes() {
                 <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('5')}>+</button>Clause Redesign</h1>
                 {sections.includes('5') &&
                     <ClauseRedesign />
+                }
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('6')}>+</button>[6 August] Download Example</h1>
+                {sections.includes('6') &&
+                    <DownloadExample />
                 }
             </div>
         </div>

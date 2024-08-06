@@ -17,7 +17,11 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
                         <div key={i}>
                             <button id={clause.id} key={clause.id + i} className="m-2 p-2 outline rounded" onClick={() => handleClick(clause)}>
                                 <div>Name: {clause.name}</div>
-                                <div>{getTermString(clause)}</div>
+                                <div>{getTermString(clause.unknown)}</div>
+                                <div>Known:</div>
+                                {Array.from(clause.known).map((term, i) => (
+                                    <span key={term.id}>{term.name+" "}</span>
+                                ))}
                             </button>
                         </div>
                     )}

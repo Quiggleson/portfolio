@@ -1,19 +1,18 @@
 'use client';
 
-import { useState, KeyboardEvent, ChangeEvent } from "react";
-import { Clause, Connection, ConnectionType, Expansion, Implication, Instance, TermSet } from "./satclasses";
-import { createClause, setInstance } from "./satutils";
+import { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
+import { Clause, Expansion, Implication, Instance } from "./satclasses";
 import { RenderClause, RenderClauses, RenderConnection, RenderConnections } from "./satcomponents";
 import { ControlsModal, EditClauseModal } from "./modals";
+import { downloadJSON } from "../utils/download";
 
 export default function Sat2() {
-    const [connectionMode, setConnectionMode] = useState('');
-    const [clauses, setClauses] = useState<Clause[]>([]);
-    const [connections, setConnections] = useState<Connection[]>([]);
-    const [selected, setSelected] = useState<Clause[]>([]);
+    const [mode, setMode] = useState('');
     const [modal, setModal] = useState('');
+    const [selected, setSelected] = useState<Clause[]>([]);
     const [instances, setInstances] = useState<Instance[]>([new Instance([], [])]);
-    const [curInstanceIdx, setCurInstanceIdx] = useState(0);
+    // idx of instance
+    const [current, setCurrent] = useState(0);
 
     function handleKeyUp(event: KeyboardEvent<HTMLInputElement>) {
         if (modal !== '') {
@@ -22,28 +21,24 @@ export default function Sat2() {
 
         switch (event.key) {
             case "Shift": {
-                connectionMode === '' ? setConnectionMode('expansion') : setConnectionMode('');
+                mode === '' ? setMode('expansion') : setMode('');
                 setSelected([]);
                 break;
             }
             case "Control": {
-                connectionMode === '' ? setConnectionMode('implication') : setConnectionMode('');
+                mode === '' ? setMode('implication') : setMode('');
                 setSelected([]);
                 break;
             }
             case "e": {
-                connectionMode === '' ? setConnectionMode('edit') : setConnectionMode('');
+                mode === '' ? setMode('edit') : setMode('');
                 setSelected([]);
                 break;
             }
             case "n": {
-                const c = createClause(undefined, 3, [], instances[curInstanceIdx].clauses);
-                c.addTerm(instances[curInstanceIdx]);
-                instances[curInstanceIdx].clauses.push(c);
+                const c = instances[current].addClause();
+                instances[current].addUnknown(c);
                 setInstances([...instances]);
-                console.log('creating clause ' + JSON.stringify(c));
-                console.log('instances: ' + JSON.stringify(instances));
-                console.log('curInstanceIdx: ' + curInstanceIdx);
                 break;
             }
             case "h": {
@@ -51,11 +46,11 @@ export default function Sat2() {
                 break;
             }
             // case 'c': {
-            //     connectionMode === '' ? setConnectionMode('copy') : setConnectionMode('');
+            //     mode === '' ? setMode('copy') : setMode('');
             //     setSelected([]);
             // }
             // case 't': {
-            //     connectionMode === '' ? setConnectionMode('newTerm') : setConnectionMode('');
+            //     mode === '' ? setMode('newTerm') : setMode('');
             //     setSelected([]);
             // }
             default: {
@@ -66,77 +61,61 @@ export default function Sat2() {
     }
 
     function handleClick(clause: Clause) {
-        if (modal !== '' || connectionMode === '') {
+        if (modal !== '' || mode === '') {
             return;
         }
 
-        console.log('I got clicked! ' + clause.id);
         if (!selected.includes(clause)) {
             setSelected([...selected, clause]);
         }
-        if (connectionMode === 'expansion' && selected.length === 1) {
+        if (mode === 'expansion' && selected.length === 1) {
             const e = new Expansion(selected[0], clause);
-            instances[curInstanceIdx].connections.push(e);
-            setConnectionMode('');
+            instances[current].connections.push(e);
+            setMode('');
             setSelected([]);
         }
-        else if (connectionMode === 'implication' && selected.length === 2) {
+        else if (mode === 'implication' && selected.length === 2) {
             const i = new Implication(selected[0], selected[1], clause);
-            instances[curInstanceIdx].connections.push(i);
-            setConnectionMode('');
+            instances[current].connections.push(i);
+            setMode('');
             setSelected([]);
         }
-        else if (connectionMode === 'edit' && selected.length === 0) {
-            console.log('Instance: ' + JSON.stringify(instances[curInstanceIdx]));
+        else if (mode === 'edit' && selected.length === 0) {
+            console.log('Instance: ' + JSON.stringify(instances[current]));
             setModal('editclause');
         // }
-        // else if (connectionMode === 'copy' && selected.length === 0) {
+        // else if (mode === 'copy' && selected.length === 0) {
         //     setClauses([...clauses, createClause(undefined, clause.length, Array.from(clause.knownTerms), clauses)]);
         //     setSelected([]);
-        // } else if (connectionMode === 'newTerm') {
-        //     instances[curInstanceIdx].getClause(clause.id)?.addTerm(instances[curInstanceIdx]);
+        // } else if (mode === 'newTerm') {
+        //     instances[current].getClause(clause.id)?.addTerm(instances[current]);
         //     setSelected([]);
         }
     }
 
-    const downloadJSON = () => {
-        const obj = {
-            "clauses": clauses,
-            "connections": connections
-        }
-        const jsonString = JSON.stringify(obj);
-        console.log(jsonString);
-        const blob = new Blob([jsonString], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "myObject.json";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-    };
+    // const downloadJSON = (filename: string) => {
+    //     // const obj = instances[current].toJSON();
+    //     const jsonString = JSON.stringify(instances[current]);
+    //     console.log(jsonString);
+    //     const blob = new Blob([jsonString], { type: "application/json" });
+    //     const url = URL.createObjectURL(blob);
+    //     const link = document.createElement("a");
+    //     link.href = url;
+    //     link.download = "myObject.json";
+    //     document.body.appendChild(link);
+    //     link.click();
+    //     document.body.removeChild(link);
+    //     URL.revokeObjectURL(url);
+    // };
 
     async function uploadFile(event: ChangeEvent<HTMLInputElement>) {
         console.log('File uploaded')
         if (event.target.files !== null) {
-            setInstance(JSON.parse(await event.target.files[0].text()), setClauses, setConnections)
+            const i = Instance.from(JSON.parse(await event.target.files[0].text()));
+            setInstances([...instances, i]);
+            // setInstance(JSON.parse(await event.target.files[0].text()), setClauses, setConnections)
             event.target.files = null;
         }
-    }
-
-    function switchInstance(newInstanceIdx: number) {
-        instances[curInstanceIdx].clauses = clauses;
-        instances[curInstanceIdx].connections = connections;
-        setClauses(instances[newInstanceIdx].clauses);
-        setConnections(instances[newInstanceIdx].connections);
-        setCurInstanceIdx(newInstanceIdx);
-    }
-
-    function copyInstance() {
-        switchInstance(curInstanceIdx);
-        const newInstance = instances[curInstanceIdx].copy();
-        setInstances([...instances, newInstance]);
     }
 
     return (
@@ -148,14 +127,16 @@ export default function Sat2() {
                 className="block outline rounded px-2 hover:bg-button-hover my-2"
                 onClick={() => setModal('help')}
             >Help</button>
-            {/* <p>Import</p>
+            <p>Import</p>
             <label htmlFor="file-upload" className="block outline rounded hover:bg-button-hover my-2 w-fit px-2">Upload File</label>
             <input id="file-upload" type="file" className="hidden" onChange={uploadFile} />
-            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={downloadJSON}>Export</button>
-            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={copyInstance}>Copy Instance</button> */}
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => downloadJSON('instance.json', instances[current])}>Export</button>
+            {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={copyInstance}>Copy Instance</button> */}
+            {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => checkInstance(instances[current])}>Check Instance</button> */}
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => {instances[current].addOpposites(); setInstances([...instances])}}>Add Opposite Form Terms</button>
             <div className="flex">
                 {instances.map((instance, i) => 
-                <button key={i} className={"outline rounded-t px-2 mx-1 "  + (curInstanceIdx === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => switchInstance(i)}>
+                <button key={i} className={"outline rounded-t px-2 mx-1 "  + (current === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => setCurrent(i)}>
                     Instance {i}
                 </button>
                 )}
@@ -163,13 +144,13 @@ export default function Sat2() {
             <div>
                 Clauses:
                 <RenderClauses
-                    clauses={instances[curInstanceIdx].clauses}
+                    clauses={instances[current].clauses}
                     handleClick={handleClick}
                 />
             </div>
             <div>
                 Connections:
-                {instances[curInstanceIdx].connections.map((connection, i) =>
+                {instances[current].connections.map((connection, i) =>
                     <div key={connection.id + "div"}>
                         <RenderConnection
                             key={connection.id}
@@ -189,20 +170,20 @@ export default function Sat2() {
                     </div>
                 )}
             </div>
-            <div>Mode: {connectionMode}</div>
+            <div>Mode: {mode}</div>
             {modal === 'editclause' &&
                 <EditClauseModal
                     clause={selected[0]}
-                    close={() => { setModal(''); setSelected([]); setConnectionMode(''); }}
-                    instance={instances[curInstanceIdx]}
+                    close={() => { setModal(''); setSelected([]); setMode(''); }}
+                    instance={instances[current]}
                 />}
             {modal === 'help' &&
                 <ControlsModal
-                    close={() => { setModal(''); setSelected([]); setConnectionMode(''); }}
+                    close={() => { setModal(''); setSelected([]); setMode(''); }}
                 />
             }
             <RenderConnections 
-                connections={instances[curInstanceIdx].connections}
+                connections={instances[current].connections}
             />
         </div>
     );

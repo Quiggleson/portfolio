@@ -1,29 +1,13 @@
 import { Dispatch, SetStateAction } from "react";
-import { Clause, Connection, Expansion, Implication, Instance, TermSet } from "./satclasses";
-
-export function createClause(name: string | undefined, length: number, knownTerms: TermSet[], clauses: Clause[]) {
-    const newName = name === undefined ? getNextName(clauses) : name;
-    return new Clause(length, new Set(knownTerms), newName);
-}
-
-function getNextName(clauses: Clause[]) {
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    var i = 0;
-    var takenNames = new Set<string>();
-    clauses.forEach((clause) => {
-        takenNames.add(clause.name);
-    });
-    while (i < 26 && takenNames.has(alphabet[i])) {i++};
-    return i === 26 ? 'A' : alphabet[i];
-}
+import { Clause, Connection, ConnectionType, Expansion, Implication, Instance, TermSet } from "./satclasses";
 
 // Return human readable list of terms
-export function getTermString(clause: Clause) {
+export function getTermString(terms: Set<TermSet>) {
     var knownTermStr = '';
 
-    Array.from(clause.knownTerms).forEach((term, i) => {
+    Array.from(terms).forEach((term, i) => {
         knownTermStr += term.name;
-        if (i !== clause.knownTerms.size - 1) { knownTermStr += ' U ' };
+        if (i !== terms.size - 1) { knownTermStr += ' U ' };
     })
     return knownTermStr;
 }
@@ -42,14 +26,46 @@ export function getTermString(clause: Clause) {
 //     return knownTerms;
 // }
 
-export function setInstance(instance: Instance, setClauses: Dispatch<SetStateAction<Clause[]>>, setConnections: Dispatch<SetStateAction<Connection[]>>, ) {
-    var clauses: Clause[] = [];
-    instance.clauses.forEach((clause) => {
-        clauses.push(Clause.from(clause));
-    })
-    setClauses(clauses);
-    setConnections(instance.connections);
-}
+// used for uploading JSON files
+// export function setInstance(instance: Instance, setClauses: Dispatch<SetStateAction<Clause[]>>, setConnections: Dispatch<SetStateAction<Connection[]>>, ) {
+//     var clauses: Clause[] = [];
+//     instance.clauses.forEach((clause) => {
+//         clauses.push(Clause.from(clause));
+//     })
+//     setClauses(clauses);
+//     setConnections(instance.connections);
+// }
+
+// Check connections are valid
+// export function checkInstance(instance: Instance): string {
+
+//     var warnings = "";
+
+//     (instance.connections.filter((c) => c.type === ConnectionType.expansion) as Expansion[]).forEach((expansion) => {
+//         if (expansion.input.length !== expansion.output.length - 1) {
+//             warnings += "Clause " + expansion.input.name + " is not exactly one shorter than " + expansion.output.name + "\n";
+//         }
+//         if (expansion.input.knownTerms.difference(expansion.output.knownTerms).size > 0) {
+//             warnings += "Clause " + expansion.output.name + " does not contain all termSets from" + expansion.input.name + ". The following terms are missing: " + JSON.stringify(Array.from(expansion.input.knownTerms.difference(expansion.output.knownTerms))) + "\n";
+//         }
+//     })
+//     if (warnings.length === 0) {
+//         warnings = "All good!"
+//     }
+//     console.log(warnings);
+//     return warnings;
+// }
+
+// // Check whether or not the clauses in the implication contain opposite form terms
+// export function checkImplication(implication: Implication) {
+//     var valid = false;
+//     implication.positive.oppFormTerms.forEach((term) => {
+//         if (implication.negative.getTermbyName('-'+term.name) !== undefined) {
+//             valid = true;
+//         }
+//     })
+//     return valid;
+// }
 
 // Return possible scenarios based on what must be true given an expansion
 // TODO currently it makes a new instance for each expansion, but want to add what must exist first and then add new possible instances

@@ -1,10 +1,11 @@
-import { Dispatch, SetStateAction, useState } from "react";
-import { Clause, Connection, Expansion, Implication, Instance, TermSet } from "./satclasses";
+import { useState } from "react";
+import { Clause, Instance, TermSet } from "./satclasses";
 
 export function EditClauseModal({ clause, close, instance }: { clause: Clause, close: () => void, instance: Instance }) {
 
     const [, forceUpdate] = useState(0);
     const [tempClause, setTempClause] = useState(clause.copy());
+    const [searching, setSearching] = useState('');
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
@@ -15,8 +16,8 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
 
     function handleDelete(event: React.FormEvent) {
         instance.clauses = [...instance.clauses.filter((c) => c.id !== clause.id)];
+        instance.connections = [...instance.connections.filter((con) => !con.getClauses().includes(clause))]
         close();
-        // TODO handle connections
     }
 
     return (
@@ -56,8 +57,8 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                 onChange={(e) => { if (e.target.value) { tempClause.length = Number.parseInt(e.target.value) } }}
                             />
                         </div>
-                         {/* Column */}
-                         <div className="py-2">
+                        {/* Column */}
+                        <div className="py-2">
                             <div>Column</div>
                             <input
                                 className="rounded-lg pl-1"
@@ -75,32 +76,80 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                 <div>Name</div>
                                 <div>Length</div>
                             </div>
-                            {Array.from(tempClause.knownTerms).toSorted().map((termSet, i) =>
+                            {Array.from(tempClause.known).toSorted().map((term, i) =>
                                 <div key={i} className="grid grid-cols-2">
                                     <input
                                         className="rounded mr-2 pl-2 w-16 my-1"
-                                        name={termSet.id}
+                                        name={term.id}
                                         type="text"
-                                        defaultValue={termSet.name}
+                                        defaultValue={term.name}
                                         autoComplete="off"
-                                        key={termSet.id}
-                                        onChange={(e) => { tempClause.getTermSet(termSet.id)!.name = e.target.value; console.log('updating value ' + e.target.value) }}
+                                        key={term.id}
+                                        onChange={(e) => tempClause.getTerm(term.id)!.name = e.target.value}
                                     />
                                     <div>
                                         <input
                                             className="rounded pl-2 w-16 my-1"
-                                            name={termSet.id + termSet.length}
+                                            name={term.id + term.length}
                                             type="text"
-                                            defaultValue={termSet.length}
+                                            defaultValue={term.length}
                                             autoComplete="off"
-                                            key={termSet.id + termSet.length}
+                                            key={term.id + term.length}
+                                            onChange={(e) => {if (e.target.value) {tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value)}}}
                                         />
-                                        <button type="button" className="rounded-xl outline px-2 ml-2" onClick={() => { tempClause.knownTerms.delete(termSet); forceUpdate((n) => n + 1); console.log('removing tset ' + termSet.id) }}>-</button>
+                                        <button type="button" className="rounded-xl outline px-2 ml-2" onClick={() => { tempClause.known.delete(term); forceUpdate((n) => n + 1); console.log('removing term ' + term.id) }}>-</button>
                                     </div>
                                 </div>
                             )}
-
-                            <button className="rounded-xl outline px-2 mt-2" onClick={() => { tempClause.addTerm(instance, tempClause.getTermNames()); forceUpdate((n) => n + 1) }} type="button">+</button>
+                            {searching === 'known' &&
+                                <div>
+                                    {Array.from(instance.getAllTerms()).map((term) => (
+                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => {tempClause.known.add(term); setSearching('')}}>{term.name}</button>
+                                    ))}
+                                </div>}
+                            <button className="rounded-xl outline px-2 mt-2" onClick={() => { instance.addKnown(tempClause); forceUpdate((n) => n + 1) }} type="button">+</button>
+                            <button className="rounded outline mx-2 px-2" type="button" onClick={() => setSearching('known')}>Add Existing</button>
+                        </div>
+                        {/* Unknown Terms */}
+                        <div className="py-2">
+                            <div>Unknown Terms</div>
+                            <div className="grid grid-cols-2">
+                                <div>Name</div>
+                                <div>Length</div>
+                            </div>
+                            {Array.from(tempClause.unknown).toSorted().map((term, i) =>
+                                <div key={i} className="grid grid-cols-2">
+                                    <input
+                                        className="rounded mr-2 pl-2 w-16 my-1"
+                                        name={term.id}
+                                        type="text"
+                                        defaultValue={term.name}
+                                        autoComplete="off"
+                                        key={term.id}
+                                        onChange={(e) => tempClause.getTerm(term.id)!.name = e.target.value}
+                                    />
+                                    <div>
+                                        <input
+                                            className="rounded pl-2 w-16 my-1"
+                                            name={term.id + term.length}
+                                            type="text"
+                                            defaultValue={term.length}
+                                            autoComplete="off"
+                                            key={term.id + term.length}
+                                            onChange={(e) => {if (e.target.value) {tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value)}}}
+                                        />
+                                        <button type="button" className="rounded-xl outline px-2 ml-2" onClick={() => { tempClause.unknown.delete(term); forceUpdate((n) => n + 1); console.log('removing term ' + term.id) }}>-</button>
+                                    </div>
+                                </div>
+                            )}
+                            {searching === 'unknown' &&
+                                <div>
+                                    {Array.from(instance.getAllTerms()).map((term) => (
+                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => {tempClause.unknown.add(term); setSearching('')}}>{term.name}</button>
+                                    ))}
+                                </div>}
+                            <button className="rounded-xl outline px-2 mt-2" onClick={() => { instance.addUnknown(tempClause); forceUpdate((n) => n + 1) }} type="button">+</button>
+                            <button className="rounded outline mx-2 px-2" type="button" onClick={() => setSearching('unknown')}>Add Existing</button>
                         </div>
                     </div>
                     <div className="flex p-2">
