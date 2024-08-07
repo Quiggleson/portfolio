@@ -22,6 +22,12 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
                                 {Array.from(clause.known).map((term, i) => (
                                     <span key={term.id}>{term.name+" "}</span>
                                 ))}
+                                <div>Placed</div>
+                                {Array.from(clause.unknown).map((unk, i) => (
+                                    Array.from(unk.known).map((kno, j) => (
+                                        <span key={i+"_"+j}>{kno.name+" "} &isin; {" " + unk.name + " "}</span>
+                                    ))
+                                ))}
                             </button>
                         </div>
                     )}

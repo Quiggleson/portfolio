@@ -64,7 +64,7 @@ export default function Notes() {
                 {sections.includes('5') &&
                     <ClauseRedesign />
                 }
-                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('6')}>+</button>[6 August] Download Example</h1>
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('6')}>+</button>[6 August] Download Example + Notes</h1>
                 {sections.includes('6') &&
                     <DownloadExample />
                 }

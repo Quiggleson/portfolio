@@ -31,25 +31,24 @@ export class Clause {
     static from(json: any, instance: Instance) {
         const c = instance.getClause(json.id);
         if (c) { return c };
-        return new Clause(
-            json.name,
-            json.length,
-            json.col,
-            TermSet.fromList(json.unknown, instance),
-            TermSet.fromList(json.known, instance),
-            json.id
-        );
+        const clause = new Clause(json.name, json.length, json.col, undefined, undefined, json.id);
+        instance.clauses.push(clause);
+        clause.unknown = TermSet.fromList(json.unknown, instance);
+        clause.known = TermSet.fromList(json.known, instance);
+        return clause;
     }
 
     static fromList(json: any, instance: Instance) {
         json.forEach((clause: any) => {
-            instance.clauses.push(Clause.from(clause, instance));
+            Clause.from(clause, instance);
+            // no longer have to push since updating instance in place
+            // instance.clauses.push(Clause.from(clause, instance));
         })
     }
 
     // Should only be used when copying for new instance as it copies the id
     copy() {
-        var knownCopy= new Set<TermSet>();
+        var knownCopy = new Set<TermSet>();
         var unknownCopy = new Set<TermSet>();
         this.known.forEach((term) => {
             knownCopy.add(term);
@@ -86,7 +85,11 @@ export class Clause {
     }
 
     getAllTerms() {
-        return this.known.union(this.unknown);
+        var terms = this.known.union(this.unknown);
+        this.unknown.forEach((unknown) => {
+            terms = terms.union(unknown.known);
+        })
+        return terms;
     }
 
     getTermNames() {
@@ -104,6 +107,16 @@ export class Clause {
         this.col = clause.col;
         this.known = clause.known;
         this.unknown = clause.unknown;
+    }
+
+    inUnknown(term: TermSet) {
+        var contains = false;
+        this.unknown.forEach((unknown) => {
+            if (unknown.known.has(term)) {
+                contains = true;
+            }
+        })
+        return contains;
     }
 }
 
@@ -127,6 +140,14 @@ export class TermSet {
         return '-' + this.name;
     }
 
+    getSpace() {
+        var space = this.length;
+        this.known.forEach((known) => {
+            space -= known.length;
+        })
+        return space;
+    }
+
     toJSON() {
         return {
             id: this.id,
@@ -138,16 +159,17 @@ export class TermSet {
 
     static from(json: any, instance: Instance) {
         const t = instance.getTerm(json.id);
-        if (t) {return t};
-        var known = new Set<TermSet>();
-        json.known.forEach((term: any) => {
-            known.add(TermSet.from(term, instance));
-        })
+        if (t) { return t };
+        // var known = new Set<TermSet>();
+        // json.known.forEach((term: any) => {
+        //     known.add(TermSet.from(term, instance));
+        // })
 
+        console.log('adding new term ' + json.name );
         return new TermSet(
             json.name,
             json.length,
-            known,
+            TermSet.fromList(json.known, instance),
             json.id
         )
     }
@@ -159,6 +181,7 @@ export class TermSet {
         })
         return terms;
     }
+
 }
 
 export enum ConnectionType {
@@ -181,25 +204,28 @@ export class Instance {
         this.connections = connections;
     }
 
-    addKnown(clause: Clause): string {
+    // TODO get better names
+    addKnown(clause: Clause): TermSet {
         const used = this.getTermNames().union(clause.getTermNames());
-        const names = 'abcdefghijklmnopqrstuvwxyz';
+        var names = 'abcdefghijklmnopqrstuvwxyz';
         var i = 0;
-        while (i < names.length && used.has(names[i])) {i++};
+        while (i < names.length && used.has(names[i])) { i++ };
+        var term;
         if (i === names.length) {
-            clause.known.add(new TermSet('a', 1));
-            return 'a';
+            term = new TermSet('a', 1);
+            console.log('[WARNING] There are too many terms and we\'re using the same name for many terms. Sorry.')
         } else {
-            clause.known.add(new TermSet(names[i], 1));
-            return names[i];
+            term = new TermSet(names[i], 1)
         }
+        clause.known.add(term);
+        return term;
     }
 
     addUnknown(clause: Clause) {
         const used = this.getTermNames().union(clause.getTermNames());
         const names = ['α', 'β', 'δ', 'ζ', 'η', 'λ', 'μ', 'π'];
         var i = 0;
-        while (i < names.length && used.has(names[i])) {i++};
+        while (i < names.length && used.has(names[i])) { i++ };
         if (i === names.length) {
             clause.unknown.add(new TermSet('AA', 1));
         } else {
@@ -262,7 +288,7 @@ export class Instance {
         const used = this.getClauseNames();
         const names = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         var i = 0;
-        while (i < names.length && used.has(names[i])) {i++};
+        while (i < names.length && used.has(names[i])) { i++ };
         var c: Clause;
         if (i === names.length) {
             c = new Clause('A', 3, 2);
@@ -275,11 +301,11 @@ export class Instance {
 
     addOpposites() {
         this.getImplications().forEach((im) => {
-            if (!im.processed) {
-                const termName = this.addKnown(im.positive);
-                im.negative.addKnown(new TermSet('-' + termName, 1));
-                im.processed = true;
-            }
+            if (Array.from(im.positive.known).filter((t) => im.negative.getTerm(undefined, '-' + t.name)).length) { return; }
+            const term = this.addKnown(im.positive);
+            im.negative.addKnown(new TermSet('-' + term.name, 1));
+            im.processed = true;
+
         })
     }
 
@@ -290,7 +316,7 @@ export class Instance {
     getImplications() {
         return new Set(this.connections.filter((e) => e.type === ConnectionType.implication) as Implication[]);
     }
-    
+
     toJSON() {
         return {
             clauses: this.clauses,
@@ -311,6 +337,80 @@ export class Instance {
             }
         })
         return instance;
+    }
+
+    copy() {
+        const json = this.toJSON();
+        return Instance.from(json); // lol
+    }
+
+    getFloatingTerms() {
+        const known = this.getKnownTerms();
+        const placed = this.getPlacedTerms();
+        console.log('known: ' + JSON.stringify(Array.from(known)));
+        console.log('placed: ' + JSON.stringify(Array.from(placed)));
+        // console.log('checking instance ' + JSON.stringify(this));
+
+        const floatingTerms = Array.from(known).filter((k) => {
+            console.log('testing ' + k.name);
+            return !placed.has(k);
+        })
+
+        return floatingTerms;
+    }
+
+    getKnownTerms() {
+        var terms = new Set<TermSet>();
+        this.clauses.forEach((clause) => {
+            terms = terms.union(clause.known);
+        })
+        return terms;
+    }
+
+    getPlacedTerms() {
+        var terms = new Set<TermSet>();
+        this.clauses.forEach((clause) => {
+            clause.unknown.forEach((unk) => {
+                terms = terms.union(unk.known);
+            })
+        })
+        return terms;
+    }
+
+    // oh boy, this is the big one
+    process() {
+        var instances: Instance[] = [this];
+        this.addOpposites();
+        this.clauses.forEach((clause) => {
+            Array.from(clause.known).filter((known) => !clause.inUnknown(known)).forEach((known) => {
+                console.log(known.name + ' is in unknown? ' + JSON.stringify(Array.from(clause.unknown)));
+                // console.log('inspecting known ' + known.name);
+                Array.from(clause.unknown).filter((unk) => unk.getSpace() > 0).forEach((unk) => {
+                    // console.log('inspecting unknown ' + unk.name);
+                    const instance = this.copy();
+                    const localUnk = instance.getTerm(unk.id);
+                    const localKnown = instance.getTerm(known.id);
+                    if (localUnk && localKnown) {
+                        console.log('adding local known');
+                        localUnk.known.add(localKnown);
+                        const newInstances = instance.process();
+                        instances = instances.concat(newInstances);
+                    } else {
+                        console.log('We misplaced a term');
+                    }
+                })
+            })
+        })
+        // Remove instances with floating terms and unique based on instance.equals()
+        instances = instances.filter((instance) => instance.getFloatingTerms().length === 0);
+        instances = instances.filter((instance, i) => instances.find(j => j.equals(instance)) === instance);
+        return instances;
+    }
+
+    equals(instance: Instance) {
+        const thisjson = this.toJSON();
+        const other = instance.toJSON();
+        return JSON.stringify(thisjson) === JSON.stringify(other);
     }
 
 }

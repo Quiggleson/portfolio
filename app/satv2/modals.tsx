@@ -9,7 +9,6 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        console.log('setting clause ' + JSON.stringify(clause) + " to temp clause " + JSON.stringify(tempClause));
         clause.update(tempClause);
         close();
     }
