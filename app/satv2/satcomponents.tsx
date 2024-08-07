@@ -39,7 +39,7 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
 export function RenderConnections({ connections }: { connections: Connection[] }) {
 
     return (
-        <svg className="absolute top-0 left-0 h-full w-full -z-10">
+        <svg className="fixed top-0 left-0 h-full w-full -z-10">
             {(connections.filter((c) => c.type === ConnectionType.expansion) as Expansion[]).map((expansion) => (
                 <RenderExpansion
                     key={expansion.id}

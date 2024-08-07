@@ -8,6 +8,7 @@ import { downloadJSON } from "../utils/download";
 import exampleinstance from '../../public/instance.json';
 
 export default function Sat2() {
+    const [, forceUpdate] = useState(0);
     const [mode, setMode] = useState('');
     const [modal, setModal] = useState('');
     const [selected, setSelected] = useState<Clause[]>([]);
@@ -119,6 +120,13 @@ export default function Sat2() {
             event.target.files = null;
         }
     }
+
+    useEffect(() => {
+        forceUpdate(n => n + 1);
+        window.addEventListener("scroll", () => forceUpdate(n => n + 1));
+        return () => window.removeEventListener("scroll", () => forceUpdate(n => n + 1));
+    }, []);
+
 
     return (
         <div className="outline-none px-2" onKeyUpCapture={handleKeyUp} tabIndex={0}>
