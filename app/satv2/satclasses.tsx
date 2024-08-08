@@ -5,14 +5,16 @@ export class Clause {
     col: number;
     known: Set<TermSet>;
     unknown: Set<TermSet>;
+    excluded: Set<TermSet>;
 
-    constructor(name: string, length: number, col: number, unknown?: Set<TermSet>, known?: Set<TermSet>, id?: string) {
+    constructor(name: string, length: number, col: number, unknown?: Set<TermSet>, known?: Set<TermSet>, excluded?: Set<TermSet>, id?: string) {
         this.id = id === undefined ? crypto.randomUUID() : id;
         this.name = name;
         this.length = length;
         this.col = col === undefined ? 2 : col;
         this.known = known === undefined ? new Set<TermSet>() : known;
         this.unknown = unknown === undefined ? new Set<TermSet>() : unknown;
+        this.excluded = excluded === undefined ? new Set<TermSet>() : excluded;
     }
 
     toJSON() {
@@ -22,7 +24,8 @@ export class Clause {
             length: this.length,
             col: this.col,
             known: Array.from(this.known),
-            unknown: Array.from(this.unknown)
+            unknown: Array.from(this.unknown),
+            excluded: Array.from(this.excluded)
         }
     }
 
@@ -31,10 +34,11 @@ export class Clause {
     static from(json: any, instance: Instance) {
         const c = instance.getClause(json.id);
         if (c) { return c };
-        const clause = new Clause(json.name, json.length, json.col, undefined, undefined, json.id);
+        const clause = new Clause(json.name, json.length, json.col, undefined, undefined, undefined, json.id);
         instance.clauses.push(clause);
         clause.unknown = TermSet.fromList(json.unknown, instance);
         clause.known = TermSet.fromList(json.known, instance);
+        clause.excluded = TermSet.fromList(json.excluded, instance);
         return clause;
     }
 
@@ -50,13 +54,17 @@ export class Clause {
     copy() {
         var knownCopy = new Set<TermSet>();
         var unknownCopy = new Set<TermSet>();
+        var excludedCopy = new Set<TermSet>();
         this.known.forEach((term) => {
             knownCopy.add(term);
         })
         this.unknown.forEach((term) => {
             unknownCopy.add(term);
         })
-        return new Clause(this.name, this.length, this.col, unknownCopy, knownCopy, this.id);
+        this.excluded.forEach((term) => {
+            excludedCopy.add(term);
+        })
+        return new Clause(this.name, this.length, this.col, unknownCopy, knownCopy, excludedCopy, this.id);
     }
 
     addKnown(term: TermSet) {
@@ -65,6 +73,10 @@ export class Clause {
 
     addUnknown(term: TermSet) {
         this.known.add(term);
+    }
+
+    addExcluded(term: TermSet) {
+        this.excluded.add(term);
     }
 
     getTerm(id?: string, name?: string) {
@@ -85,7 +97,11 @@ export class Clause {
     }
 
     getAllTerms() {
+        console.log(JSON.stringify(Array.from(this.unknown)));
+        console.log(JSON.stringify(Array.from(this.known)));
+        console.log(JSON.stringify(Array.from(this.excluded)));
         var terms = this.known.union(this.unknown);
+        terms = terms.union(this.excluded);
         this.unknown.forEach((unknown) => {
             terms = terms.union(unknown.known);
         })
@@ -107,6 +123,7 @@ export class Clause {
         this.col = clause.col;
         this.known = clause.known;
         this.unknown = clause.unknown;
+        this.excluded = clause.excluded;
     }
 
     inUnknown(term: TermSet) {

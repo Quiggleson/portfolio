@@ -86,13 +86,13 @@ export default function Sat2() {
             console.log('Instance: ' + JSON.stringify(instances[current]));
             console.log('floating terms: ' + JSON.stringify(instances[current].getFloatingTerms()))
             setModal('editclause');
-        // }
-        // else if (mode === 'copy' && selected.length === 0) {
-        //     setClauses([...clauses, createClause(undefined, clause.length, Array.from(clause.knownTerms), clauses)]);
-        //     setSelected([]);
-        // } else if (mode === 'newTerm') {
-        //     instances[current].getClause(clause.id)?.addTerm(instances[current]);
-        //     setSelected([]);
+            // }
+            // else if (mode === 'copy' && selected.length === 0) {
+            //     setClauses([...clauses, createClause(undefined, clause.length, Array.from(clause.knownTerms), clauses)]);
+            //     setSelected([]);
+            // } else if (mode === 'newTerm') {
+            //     instances[current].getClause(clause.id)?.addTerm(instances[current]);
+            //     setSelected([]);
         }
     }
 
@@ -121,6 +121,13 @@ export default function Sat2() {
         }
     }
 
+    async function uploadDirect(data: any) {
+        console.log('File uploaded')
+        const i = Instance.from(data);
+        setInstances([...instances, i]);
+        // setInstance(JSON.parse(await event.target.files[0].text()), setClauses, setConnections)
+    }
+
     useEffect(() => {
         forceUpdate(n => n + 1);
         window.addEventListener("scroll", () => forceUpdate(n => n + 1));
@@ -137,20 +144,21 @@ export default function Sat2() {
                 className="block outline rounded px-2 hover:bg-button-hover my-2"
                 onClick={() => setModal('help')}
             >Help</button>
-            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => downloadJSON('exampleinstance.json', exampleinstance)}>Download Example</button>
+            {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => downloadJSON('exampleinstance.json', exampleinstance)}>Download Example</button> */}
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => uploadDirect(exampleinstance)}>Load Example</button>
             <p>Import</p>
             <label htmlFor="file-upload" className="block outline rounded hover:bg-button-hover my-2 w-fit px-2">Upload File</label>
             <input id="file-upload" type="file" className="hidden" onChange={uploadFile} />
             <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => downloadJSON('instance.json', instances[current])}>Export</button>
             <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => setInstances([...instances, instances[current].copy()])}>Copy Instance</button>
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => checkInstance(instances[current])}>Check Instance</button> */}
-            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => {instances[current].addOpposites(); setInstances([...instances])}}>Add Opposite Form Terms</button>
+            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => { instances[current].addOpposites(); setInstances([...instances]) }}>Add Opposite Form Terms</button>
             <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].process()])}>PROCESS</button>
             <div className="flex">
-                {instances.map((instance, i) => 
-                <button key={i} className={"outline rounded-t px-2 mx-1 "  + (current === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => setCurrent(i)}>
-                    Instance {i}
-                </button>
+                {instances.map((instance, i) =>
+                    <button key={i} className={"outline rounded-t px-2 mx-1 " + (current === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => setCurrent(i)}>
+                        Instance {i}
+                    </button>
                 )}
             </div>
             <div>
@@ -194,7 +202,7 @@ export default function Sat2() {
                     close={() => { setModal(''); setSelected([]); setMode(''); }}
                 />
             }
-            <RenderConnections 
+            <RenderConnections
                 connections={instances[current].connections}
             />
         </div>

@@ -6,6 +6,7 @@ import SatProcessing from "./satprocessing";
 import LargeClause from "./largeclause";
 import ClauseRedesign from "./clauseredesign";
 import DownloadExample from "./downloadexample";
+import August7 from "./august7";
 
 export default function Notes() {
 
@@ -64,9 +65,12 @@ export default function Notes() {
                 {sections.includes('5') &&
                     <ClauseRedesign />
                 }
-                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('6')}>+</button>[6 August] Download Example + Notes</h1>
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('6')}>+</button>[August 6] Download Example + Notes</h1>
                 {sections.includes('6') &&
                     <DownloadExample />
+                }<h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('7')}>+</button>[August 7] Dev notes</h1>
+                {sections.includes('7') &&
+                    <August7 />
                 }
             </div>
         </div>

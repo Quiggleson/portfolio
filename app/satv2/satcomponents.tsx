@@ -28,6 +28,10 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
                                         <span key={i+"_"+j}>{kno.name+" "} &isin; {" " + unk.name + " "}</span>
                                     ))
                                 ))}
+                                <div>Excluded</div>
+                                {Array.from(clause.excluded).map((exc, i) => (
+                                    <span key={i}>{exc.name+" "}</span>
+                                ))}
                             </button>
                         </div>
                     )}
