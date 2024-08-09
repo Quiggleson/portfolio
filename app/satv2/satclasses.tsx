@@ -23,17 +23,18 @@ export class Clause {
             name: this.name,
             length: this.length,
             col: this.col,
-            known: Array.from(this.known),
-            unknown: Array.from(this.unknown),
-            excluded: Array.from(this.excluded)
+            known: Array.from(this.known).toSorted((a, b) => a.id.localeCompare(b.id)),
+            unknown: Array.from(this.unknown).toSorted((a, b) => a.id.localeCompare(b.id)),
+            excluded: Array.from(this.excluded).toSorted((a, b) => a.id.localeCompare(b.id))
         }
     }
 
     // Reads known and unknown as lists
     // WARNING, if the same term exists in known and unknown, it will get buggy
+    // WARNING: adds clause to instance
     static from(json: any, instance: Instance) {
-        const c = instance.getClause(json.id);
-        if (c) { return c };
+        const c = instance.getClauses(json.id);
+        if (c) { return c[0] };
         const clause = new Clause(json.name, json.length, json.col, undefined, undefined, undefined, json.id);
         instance.clauses.push(clause);
         clause.unknown = TermSet.fromList(json.unknown, instance);
@@ -97,9 +98,9 @@ export class Clause {
     }
 
     getAllTerms() {
-        console.log(JSON.stringify(Array.from(this.unknown)));
-        console.log(JSON.stringify(Array.from(this.known)));
-        console.log(JSON.stringify(Array.from(this.excluded)));
+        // console.log(JSON.stringify(Array.from(this.unknown)));
+        // console.log(JSON.stringify(Array.from(this.known)));
+        // console.log(JSON.stringify(Array.from(this.excluded)));
         var terms = this.known.union(this.unknown);
         terms = terms.union(this.excluded);
         this.unknown.forEach((unknown) => {
@@ -134,6 +135,56 @@ export class Clause {
             }
         })
         return contains;
+    }
+
+    // Returns placed terms (not counting excluded)
+    getPlaced() {
+        var terms = new Set<TermSet>();
+        this.unknown.forEach((unk) => {
+            terms = terms.union(unk.known).difference(this.excluded);
+        })
+        return terms;
+    }
+
+    // BIG ASSUMPTION - If an unknown termset does not explicitly contain a known term, we assume the term is not in that termset
+    isSubsetOf(other: Clause) {
+        var isSubset = true;
+        this.unknown.forEach((unk) => {
+            if (!other.unknown.has(unk)) {
+                isSubset = false;
+            }
+        })
+        this.getPlaced().forEach((term) => {
+            if (other.excluded.has(term)) {
+                isSubset = false;
+            }
+        })
+        // console.log('testing if ' + this.name + ' is subset of ' + other.name + ' ' + isSubset);
+        return isSubset;
+    }
+
+    equals(clause: Clause) {
+        var dupe = true;
+        this.excluded.forEach((exc) => {
+            if (!clause.excluded.has(exc)) {
+                dupe = false;
+            }
+        })
+        // assuming no floating terms, no need to check known
+        // this.known.forEach((known) => {
+        //     if (!clause.known.has(known)) {
+        //         dupe = false;
+        //     }
+        // })
+        this.unknown.forEach((unknown) => {
+            if (!clause.unknown.has(unknown)) {
+                dupe = false;
+            }
+        })
+        if (this.unknown.size !== clause.unknown.size || this.excluded.size !== clause.excluded.size) {
+            dupe = false;
+        }
+        return dupe;
     }
 }
 
@@ -170,7 +221,7 @@ export class TermSet {
             id: this.id,
             name: this.name,
             length: this.length,
-            known: Array.from(this.known)
+            known: Array.from(this.known).toSorted()
         }
     }
 
@@ -182,7 +233,7 @@ export class TermSet {
         //     known.add(TermSet.from(term, instance));
         // })
 
-        console.log('adding new term ' + json.name );
+        // console.log('adding new term ' + json.name);
         return new TermSet(
             json.name,
             json.length,
@@ -209,16 +260,20 @@ export enum ConnectionType {
 export interface Connection {
     type: ConnectionType
     id: string
+    output: Clause
+    getInputs: () => Clause[]
     getClauses: () => Clause[]
 }
 
 export class Instance {
     clauses: Clause[];
     connections: Connection[];
+    messages: string[]; // notes to the user about processing
 
-    constructor(clauses: Clause[], connections: Connection[]) {
+    constructor(clauses: Clause[], connections: Connection[], messages?: string[]) {
         this.clauses = clauses;
         this.connections = connections;
+        this.messages = messages === undefined ? [] : messages;
     }
 
     // TODO get better names
@@ -230,7 +285,7 @@ export class Instance {
         var term;
         if (i === names.length) {
             term = new TermSet('a', 1);
-            console.log('[WARNING] There are too many terms and we\'re using the same name for many terms. Sorry.')
+            this.messages.push('[WARNING] There are too many terms and we\'re using the same name for many terms. Sorry.');
         } else {
             term = new TermSet(names[i], 1)
         }
@@ -250,9 +305,19 @@ export class Instance {
         }
     }
 
-    getClause(id: string) {
-        const clauseList = this.clauses.filter((clause) => clause.id === id);
-        return clauseList.length === 0 ? undefined : clauseList[0];
+    getClauses(id?: string, known?: TermSet, unknown?: TermSet) {
+        if (id) {
+            const clauseList = this.clauses.filter((clause) => clause.id === id);
+            return clauseList.length === 0 ? undefined : clauseList;
+        }
+        if (known) {
+            const clauseList = this.clauses.filter((clause) => clause.known.has(known));
+            return clauseList.length === 0 ? undefined : clauseList;
+        }
+        if (unknown) {
+            const clauseList = this.clauses.filter((clause) => clause.unknown.has(unknown));
+            return clauseList.length === 0 ? undefined : clauseList;
+        }
     }
 
     getConnection(id: string) {
@@ -320,10 +385,20 @@ export class Instance {
         this.getImplications().forEach((im) => {
             if (Array.from(im.positive.known).filter((t) => im.negative.getTerm(undefined, '-' + t.name)).length) { return; }
             const term = this.addKnown(im.positive);
-            im.negative.addKnown(new TermSet('-' + term.name, 1));
+            const negativeTerm = new TermSet('-' + term.name, 1);
+            im.negative.addKnown(negativeTerm);
+            im.output.excluded = im.output.excluded.union(new Set([term, negativeTerm]));
             im.processed = true;
 
+            this.updateUnknown(im);
+
         })
+    }
+
+    // Transfer the unknowns from an implication's inputs to its output
+    // WARNING: if two implications have the same output, this will overwrite the unknowns
+    updateUnknown(implication: Implication) {
+        implication.output.unknown = implication.positive.unknown.union(implication.negative.unknown);
     }
 
     getExpansions() {
@@ -336,14 +411,18 @@ export class Instance {
 
     toJSON() {
         return {
-            clauses: this.clauses,
-            connections: this.connections
+            clauses: this.clauses.toSorted(),
+            connections: this.connections.toSorted(),
+            messages: this.messages
         }
     }
 
     static from(json: any) {
         var instance = new Instance([], []);
         Clause.fromList(json.clauses, instance);
+        json.messages.forEach((message: string) => {
+            instance.messages.push(message);
+        })
         json.connections.forEach((connection: Connection) => {
             // 0 is implication, 1 is expansion
             if (connection.type === 0) {
@@ -364,12 +443,11 @@ export class Instance {
     getFloatingTerms() {
         const known = this.getKnownTerms();
         const placed = this.getPlacedTerms();
-        console.log('known: ' + JSON.stringify(Array.from(known)));
-        console.log('placed: ' + JSON.stringify(Array.from(placed)));
+        // console.log('known: ' + JSON.stringify(Array.from(known)));
+        // console.log('placed: ' + JSON.stringify(Array.from(placed)));
         // console.log('checking instance ' + JSON.stringify(this));
 
         const floatingTerms = Array.from(known).filter((k) => {
-            console.log('testing ' + k.name);
             return !placed.has(k);
         })
 
@@ -400,15 +478,17 @@ export class Instance {
         this.addOpposites();
         this.clauses.forEach((clause) => {
             Array.from(clause.known).filter((known) => !clause.inUnknown(known)).forEach((known) => {
-                console.log(known.name + ' is in unknown? ' + JSON.stringify(Array.from(clause.unknown)));
                 // console.log('inspecting known ' + known.name);
                 Array.from(clause.unknown).filter((unk) => unk.getSpace() > 0).forEach((unk) => {
                     // console.log('inspecting unknown ' + unk.name);
                     const instance = this.copy();
                     const localUnk = instance.getTerm(unk.id);
                     const localKnown = instance.getTerm(known.id);
-                    if (localUnk && localKnown) {
-                        console.log('adding local known');
+                    const localClauses = instance.getClauses(undefined, undefined, localUnk);
+                    if (localUnk && localKnown && localClauses) {
+                        localClauses.forEach((c) => {
+                            c.known.add(localKnown);
+                        })
                         localUnk.known.add(localKnown);
                         const newInstances = instance.process();
                         instances = instances.concat(newInstances);
@@ -424,10 +504,152 @@ export class Instance {
         return instances;
     }
 
+    // Prepend a message to this instance with the longest required term based on the inputs
+    // Allows for no floating terms
+    getLongestRequiredClause(target: Clause) {
+        if (this.getFloatingTerms().length > 0) {
+            this.messages.push('[ERROR] Floating Terms are not allowed when calculating the longest required term. Please place the following terms: ');
+            this.getFloatingTerms().forEach((t) => {
+                this.messages.push(t.name);
+            })
+            return;
+        }
+
+        var current = this.getLongestClause();
+        var maybes: { clause: Clause, message: string }[] = [];
+
+        this.clauses.forEach((clause) => {
+            // console.log('longest ancestor of ' + clause.name + ' is ' + this.getLongestAncestor(clause).length);
+            if (this.getLongestAncestor(clause).length < current.length) {
+                if (clause.isSubsetOf(target)) {
+                    // console.log(clause.name + ' can expand to ' + target.name);
+                    maybes.push({ clause: clause, message: 'Clause ' + clause.name + ' can expand to clause ' + target.name });
+                    current = this.getLongestAncestor(clause);
+                }
+            }
+        })
+        this.messages.unshift();
+        this.messages[0] = current.length + ' is the longest clause required to derive ' + target.name;
+        maybes.forEach((maybe) => {
+            if (maybe.clause === current) {
+                this.messages.push(maybe.message);
+            }
+        })
+
+    }
+
     equals(instance: Instance) {
         const thisjson = this.toJSON();
         const other = instance.toJSON();
         return JSON.stringify(thisjson) === JSON.stringify(other);
+    }
+
+    getLongestClause() {
+        var longest = 0;
+        var c = this.clauses[0];
+        this.clauses.forEach((clause) => {
+            if (clause.length > longest) {
+                c = clause;
+                longest = clause.length;
+            }
+        })
+        return c;
+    }
+
+    // Traces the implication graph to get the longest required ancestor (including self)
+    getLongestAncestor(clause: Clause) {
+        var minRequired: Clause | undefined = undefined;
+
+        this.connections.filter((con) => con.output === clause).forEach((con) => {
+            var c = clause;
+            con.getInputs().forEach((input) => {
+                const inputAncestor = this.getLongestAncestor(input);
+                if (inputAncestor !== undefined && inputAncestor.length > c.length) {
+                    c = inputAncestor
+                }
+            })
+            if (minRequired === undefined || (c.length > 0 && c.length < minRequired.length)) {
+                minRequired = c;
+            }
+        })
+
+        return minRequired === undefined ? clause : minRequired;
+    }
+
+    // Based on placed terms, add new clauses and implications that exist because of them
+    addNewImplications() {
+        if (this.getFloatingTerms().length > 0) {
+            this.messages.push('[ERROR] Floating Terms are not allowed when calculating the longest required term. Please place the following terms: ');
+            this.getFloatingTerms().forEach((t) => {
+                this.messages.push(t.name);
+            })
+            return;
+        }
+
+        // Warning: changing clauses while iterating
+        this.clauses.forEach((clause) => {
+            Array.from(clause.known).filter(known => known.name[0] !== "-" && !clause.excluded.has(known)).forEach((pterm) => {
+                const nterm = this.getTerm(undefined, pterm.getOppositeName());
+                const oppClauses = this.getClauses(undefined, nterm);
+                if (oppClauses && nterm) {
+                    oppClauses.filter((c) => !c.excluded.has(nterm)).forEach((other) => {
+
+                        var output = this.addClause();
+                        output.unknown = clause.unknown.union(other.unknown);
+                        output.known = clause.known.union(other.known);
+                        output.col = clause.col + 1;
+                        output.excluded = new Set([pterm, nterm]);
+                        this.setLength(output);
+                        const dupe = this.duplicateClause(output);
+                        if (dupe) {
+                            this.clauses = this.clauses.filter((c) => c.id !== output.id);
+                            output = dupe;
+                        } else {
+                            this.messages.push('Adding clause ' + output.name);
+                        }
+                        const implication = new Implication(clause, other, output, undefined, true);
+                        if (!this.duplicateImplication(implication)) {
+                            this.messages.push('Adding implication from ' + clause.name + ' and ' + other.name + ' to ' + output.name);
+                            this.connections.push(implication);
+                            this.updateUnknown(implication);
+                        }
+                    })
+                }
+            })
+        })
+
+    }
+
+    // Considering the length of other clauses, set the largest possible length for clause
+    setLength(clause: Clause) {
+        var max = -1;
+        this.clauses.filter(c => c.length > 0).forEach((c) => {
+            if (clause.isSubsetOf(c)) {
+                max = Math.max(max, c.length);
+            }
+        })
+        clause.length = max;
+    }
+
+    // return true if clause with same known, unknown, and excluded exists in this.clauses
+    duplicateClause(clause: Clause) {
+        var dupe = undefined;
+        this.clauses.filter(c => c.id !== clause.id).forEach((other) => {
+            if (other.equals(clause)) {
+                dupe = other;
+            }
+        })
+        return dupe;
+    }
+
+    duplicateImplication(implication: Implication) {
+        var dupe = undefined;
+        (this.connections.filter((c) => c.type === ConnectionType.implication) as Implication[]).forEach((other) => {
+            if (other.equals(implication)) {
+                dupe = other;
+            }
+        })
+        return dupe;
     }
 
 }
@@ -450,6 +672,10 @@ export class Implication implements Connection {
 
     public getClauses() {
         return [this.positive, this.negative, this.output];
+    }
+
+    public getInputs() {
+        return [this.positive, this.negative]
     }
 
     // copy(instance?: Instance) {
@@ -477,6 +703,10 @@ export class Implication implements Connection {
             json.processed
         )
     }
+
+    equals(implication: Implication) {
+        return this.positive === implication.positive && this.negative === implication.negative && this.output === implication.output;
+    }
 }
 
 export class Expansion implements Connection {
@@ -493,6 +723,10 @@ export class Expansion implements Connection {
 
     public getClauses() {
         return [this.input, this.output];
+    }
+
+    public getInputs() {
+        return [this.input];
     }
 
     static from(json: any, instance: Instance) {

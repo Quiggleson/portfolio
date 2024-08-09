@@ -94,7 +94,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                             defaultValue={term.length}
                                             autoComplete="off"
                                             key={term.id + term.length}
-                                            onChange={(e) => {if (e.target.value) {tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value)}}}
+                                            onChange={(e) => { if (e.target.value) { tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value) } }}
                                         />
                                         <button type="button" className="rounded-xl outline px-2 ml-2" onClick={() => { tempClause.known.delete(term); forceUpdate((n) => n + 1); console.log('removing term ' + term.id) }}>-</button>
                                     </div>
@@ -103,7 +103,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                             {searching === 'known' &&
                                 <div>
                                     {Array.from(instance.getAllTerms()).map((term) => (
-                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => {tempClause.known.add(term); setSearching('')}}>{term.name}</button>
+                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => { tempClause.known.add(term); setSearching('') }}>{term.name}</button>
                                     ))}
                                 </div>}
                             <button className="rounded-xl outline px-2 mt-2" onClick={() => { instance.addKnown(tempClause); forceUpdate((n) => n + 1) }} type="button">+</button>
@@ -135,7 +135,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                             defaultValue={term.length}
                                             autoComplete="off"
                                             key={term.id + term.length}
-                                            onChange={(e) => {if (e.target.value) {tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value)}}}
+                                            onChange={(e) => { if (e.target.value) { tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value) } }}
                                         />
                                         <button type="button" className="rounded-xl outline px-2 ml-2" onClick={() => { tempClause.unknown.delete(term); forceUpdate((n) => n + 1); console.log('removing term ' + term.id) }}>-</button>
                                     </div>
@@ -144,7 +144,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                             {searching === 'unknown' &&
                                 <div>
                                     {Array.from(instance.getAllTerms()).map((term) => (
-                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => {tempClause.unknown.add(term); setSearching('')}}>{term.name}</button>
+                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => { tempClause.unknown.add(term); setSearching('') }}>{term.name}</button>
                                     ))}
                                 </div>}
                             <button className="rounded-xl outline px-2 mt-2" onClick={() => { instance.addUnknown(tempClause); forceUpdate((n) => n + 1) }} type="button">+</button>
@@ -176,7 +176,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                                             defaultValue={term.length}
                                             autoComplete="off"
                                             key={term.id + term.length}
-                                            onChange={(e) => {if (e.target.value) {tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value)}}}
+                                            onChange={(e) => { if (e.target.value) { tempClause.getTerm(term.id)!.length = Number.parseInt(e.target.value) } }}
                                         />
                                         <button type="button" className="rounded-xl outline px-2 ml-2" onClick={() => { tempClause.excluded.delete(term); forceUpdate((n) => n + 1); console.log('removing term ' + term.id) }}>-</button>
                                     </div>
@@ -185,7 +185,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
                             {searching === 'excluded' &&
                                 <div>
                                     {Array.from(instance.getAllTerms()).map((term) => (
-                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => {tempClause.excluded.add(term); setSearching('')}}>{term.name}</button>
+                                        <button key={term.id} type="button" className="rounded outline px-2 m-2 block" onClick={() => { tempClause.excluded.add(term); setSearching('') }}>{term.name}</button>
                                     ))}
                                 </div>}
                             {/* Not really gonna be adding terms like that, should only select existing */}
@@ -243,4 +243,32 @@ export function ControlsModal({ close }: { close: () => void }) {
             </div>
         </div>
     );
+}
+
+export function ConnectionsModal({ close, instance }: { close: () => void, instance: Instance }) {
+    return (
+        <div className="fixed inset-0 flex items-center justify-center z-50">
+            <div className="bg-black rounded outline outline-2 outline-black-50 relative max-w-xl w-1/3 min-h-1/3">
+                <div className="justify-between flex w-full p-2 h-1/6">
+                    <div className="">Connections</div>
+                    <button onClick={close}>Close</button>
+                    {/* <div className="flex flex-col justify-items">
+                <button onClick={close} className="peer">Close</button>
+                <div className="peer-hover:animate-fadeInUnderline peer-hover:border-b-2 border-b-2 border-button-hover peer-hover:border-black"></div>
+            </div> */}
+                </div>
+                {Array.from(instance.getImplications()).toSorted((a, b) => a.positive.name.localeCompare(b.positive.name)).map((c, i) => 
+                <div className="pl-2" key={i}>
+                    <p key={c.id + i}>{c.positive.name} + {c.negative.name} implies {c.output.name}</p>
+                </div>
+                )}
+                {Array.from(instance.getExpansions()).toSorted((a, b) => a.input.name.localeCompare(b.input.name)).map((c, i) => 
+                <div className="pl-2" key={i}>
+                    <p key={c.id + i}>{c.input.name} expands to {c.output.name}</p>
+                </div>
+                )}
+            </div>
+        </div>
+    );
+
 }

@@ -2,8 +2,8 @@
 
 import { useState, KeyboardEvent, ChangeEvent, useEffect } from "react";
 import { Clause, Expansion, Implication, Instance } from "./satclasses";
-import { RenderClause, RenderClauses, RenderConnection, RenderConnections } from "./satcomponents";
-import { ControlsModal, EditClauseModal } from "./modals";
+import { DrawConnections, RenderClause, RenderClauses, RenderConnection, RenderConnections } from "./satcomponents";
+import { ConnectionsModal, ControlsModal, EditClauseModal } from "./modals";
 import { downloadJSON } from "../utils/download";
 import exampleinstance from '../../public/instance.json';
 
@@ -45,6 +45,11 @@ export default function Sat2() {
             }
             case "h": {
                 setModal('help');
+                break;
+            }
+            case "i": {
+                mode === '' ? setMode('longest') : setMode('');
+                setSelected([]);
                 break;
             }
             // case 'c': {
@@ -94,6 +99,11 @@ export default function Sat2() {
             //     instances[current].getClause(clause.id)?.addTerm(instances[current]);
             //     setSelected([]);
         }
+        else if (mode === 'longest' && selected.length === 0) {
+            instances[current].getLongestRequiredClause(clause);
+            setSelected([]);
+            setMode('');
+        }
     }
 
     // const downloadJSON = (filename: string) => {
@@ -137,13 +147,21 @@ export default function Sat2() {
 
     return (
         <div className="outline-none px-2" onKeyUpCapture={handleKeyUp} tabIndex={0}>
-            <div>
-                This is the second version of an interactive 3sat instance. This version will be focused on creating clauses with unknown terms as opposed to working with strictly defined clauses.
+            <div>INFORMATION - What the heck is going on around here?</div>
+            <div>For the most immediate demonstration of features, please do the following:</div>
+            <div className="pl-8">
+                <p>1. Click &quot;Load Example&quot; - this will load an example implication graph and add it to the list of instances</p>
+                <p>2. Switch to the Instance 1 tab - here you can see the clauses and connections. At this point we know clauses contains specific sets of terms, but we don&apos;t know for certain what they are.</p>
+                <p>3. Click &quot;PROCESS&quot; - at this point we have some information about the instance. For example, we know that the implication between C and D which derives E means there must be some term that&apos;s positive in one clause and negated in the other. Additionally, we know that term in C must either be in &delta; or &alpha;. This process button makes a new instance for each possible placement of each term.</p>
+                <p>4. Examine one of the new instances - you will see each instance places a and -a in each possible set and it gets updated in other clauses containing that set as well.</p>
+                <p>5. Go to instance 5 and click &quot;Add new implications&quot; - Because we now know the placement of the terms in the clauses, we can derive additional clauses. Notice A contains the term a and B contains the term -a so we can use these clauses to derive a new clause, F, as seen in Column 3. We also know the maximum length of F is 3 since its terms are a subset of that of E and the length of E is 3.</p>
+                <p>6. Press the &quot;i&quot; key then click the E clause - this will trace the graph to get the shortest length of the longest clause that&apos;s required to be processed. Notice the original path to derive E from A and B went through C and D which were of length 4. Now we derived a new clause, F, which is of length 3 and is a subset of E so we only have to process a clause of length 3 to derive E. This idea of shortcutting clauses is very powerful and will hopefully be used to find K: the shortest length of the longest clause required to be processed to derive all of the clauses that can be derived. If this K is independent of the number of terminals, P = NP.</p>
             </div>
             <button
                 className="block outline rounded px-2 hover:bg-button-hover my-2"
                 onClick={() => setModal('help')}
             >Help</button>
+            <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setModal('connections')}>View Connections</button>
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => downloadJSON('exampleinstance.json', exampleinstance)}>Download Example</button> */}
             <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => uploadDirect(exampleinstance)}>Load Example</button>
             <p>Import</p>
@@ -152,8 +170,9 @@ export default function Sat2() {
             <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => downloadJSON('instance.json', instances[current])}>Export</button>
             <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => setInstances([...instances, instances[current].copy()])}>Copy Instance</button>
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => checkInstance(instances[current])}>Check Instance</button> */}
-            <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => { instances[current].addOpposites(); setInstances([...instances]) }}>Add Opposite Form Terms</button>
+            {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => { instances[current].addOpposites(); setInstances([...instances]) }}>Add Opposite Form Terms</button> */}
             <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].process()])}>PROCESS</button>
+            <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => {instances[current].addNewImplications(); setInstances([...instances])}}>Add new implications</button>
             <div className="flex">
                 {instances.map((instance, i) =>
                     <button key={i} className={"outline rounded-t px-2 mx-1 " + (current === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => setCurrent(i)}>
@@ -168,17 +187,27 @@ export default function Sat2() {
                     handleClick={handleClick}
                 />
             </div>
-            <div>
+            {/* <div>
                 Connections:
                 {instances[current].connections.map((connection, i) =>
                     <div key={connection.id + "div"}>
                         <RenderConnection
                             key={connection.id}
                             connection={connection}
-                        />
-                    </div>
+                            />
+                            </div>
+                            )}
+                            </div> */}
+            <div>
+                <p>Messages:</p>
+                {instances[current].messages.map((message, i) =>
+                    <p key={i}>{message}</p>
                 )}
             </div>
+            <p>Connections:</p>
+            <RenderConnections
+                instance={instances[current]}
+            />
             <div>
                 Selected:
                 {selected.map((clause, i) =>
@@ -202,9 +231,15 @@ export default function Sat2() {
                     close={() => { setModal(''); setSelected([]); setMode(''); }}
                 />
             }
-            <RenderConnections
+            {modal === 'connections' &&
+                <ConnectionsModal
+                    close={() => { setModal(''); setSelected([]); setMode(''); }}
+                    instance={instances[current]}
+                />
+            }
+            {/* <DrawConnections
                 connections={instances[current].connections}
-            />
+            /> */}
         </div>
     );
 }

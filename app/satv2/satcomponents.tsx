@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Clause, Connection, ConnectionType, Expansion, Implication } from "./satclasses";
+import { Clause, Connection, ConnectionType, Expansion, Implication, Instance } from "./satclasses";
 import { getTermString } from "./satutils";
 
 export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], handleClick: (clause: Clause) => void }) {
@@ -20,17 +20,17 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
                                 <div>{getTermString(clause.unknown)}</div>
                                 <div>Known:</div>
                                 {Array.from(clause.known).map((term, i) => (
-                                    <span key={term.id}>{term.name+" "}</span>
+                                    <span key={term.id}>{term.name + " "}</span>
                                 ))}
                                 <div>Placed</div>
                                 {Array.from(clause.unknown).map((unk, i) => (
                                     Array.from(unk.known).map((kno, j) => (
-                                        <span key={i+"_"+j}>{kno.name+" "} &isin; {" " + unk.name + " "}</span>
+                                        <span key={i + "_" + j}>{kno.name + " "} &isin; {" " + unk.name + " "}</span>
                                     ))
                                 ))}
                                 <div>Excluded</div>
                                 {Array.from(clause.excluded).map((exc, i) => (
-                                    <span key={i}>{exc.name+" "}</span>
+                                    <span key={i}>{exc.name + " "}</span>
                                 ))}
                             </button>
                         </div>
@@ -40,7 +40,7 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
         </div>);
 }
 
-export function RenderConnections({ connections }: { connections: Connection[] }) {
+export function DrawConnections({ connections }: { connections: Connection[] }) {
 
     return (
         <svg className="fixed top-0 left-0 h-full w-full -z-10">
@@ -124,4 +124,22 @@ export function RenderClause({ clause }: { clause: Clause }) {
 
 export function RenderConnection({ connection }: { connection: Connection }) {
     return (<>{JSON.stringify(connection)}</>);
+}
+
+export function RenderConnections({ instance }: { instance: Instance }) {
+    return (
+        <div>
+            {Array.from(instance.getImplications()).sort((a, b) => a.positive.name.localeCompare(b.positive.name)).map((c, i) =>
+                <div className="pl-2" key={i}>
+                    <p key={i}>{c.positive.name} + {c.negative.name} implies {c.output.name}</p>
+                </div>
+            )}
+            {Array.from(instance.getExpansions()).sort((a, b) => a.input.name.localeCompare(b.input.name)).map((c, i) =>
+                <div className="pl-2" key={i}>
+                    <p key={i}>{c.input.name} expands to {c.output.name}</p>
+                </div>
+            )}
+        </div>
+
+    );
 }
