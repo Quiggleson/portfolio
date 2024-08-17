@@ -3,14 +3,16 @@
 import { useState } from 'react';
 import { pdfjs, Document, Page } from 'react-pdf';
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+const basePath = process.env.NEXT_PUBLIC_ROOT_PATH;
 
-  export default function PDFViewer({ file }: { file: string }) {
+pdfjs.GlobalWorkerOptions.workerSrc = basePath + '/pdfjs-dist/pdf.worker.min.mjs';
+
+export default function PDFViewer({ file }: { file: string }) {
     const [numPages, setNumPages] = useState<number>(0);
     const [pageNumber, setPageNumber] = useState<number>(1);
     const [scale, setScale] = useState(1); // State for zoom scale
 
-    function onDocumentLoadSuccess({ numPages } : { numPages: number}) {
+    function onDocumentLoadSuccess({ numPages }: { numPages: number }) {
         setNumPages(numPages);
     }
 
