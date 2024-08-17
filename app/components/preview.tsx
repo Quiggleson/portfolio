@@ -32,7 +32,7 @@ export default function Preview({ props }: { props: PreviewProps }) {
                         <div className={`overflow-hidden justify-items-start transition-max-height duration-500 ease-in-out ${expanded ? 'max-h-[250px]' : 'max-h-0'}`}>
                             <div className="w-fit text-gray-500">{props.description}</div>
                             {props.links.map((link, i) =>
-                                <div className="ml-6 pl-2 rounded flex hover:bg-slate-100">
+                                <div key={i} className="ml-6 pl-2 rounded flex hover:bg-slate-100">
                                     <a href={link.url} className={link.style ? link.style : ""}>{link.name}</a>
                                 </div>
                             )}
