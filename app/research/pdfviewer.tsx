@@ -5,7 +5,7 @@ import { pdfjs, Document, Page } from 'react-pdf';
 
 const basePath = process.env.NEXT_PUBLIC_ROOT_PATH;
 
-pdfjs.GlobalWorkerOptions.workerSrc = basePath + '/pdfjs-dist/pdf.worker.min.mjs';
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdn.jsdelivr.net/npm/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function PDFViewer({ file }: { file: string }) {
     const [numPages, setNumPages] = useState<number>(0);
