@@ -1,7 +1,8 @@
 'use client';
 
-import PDFViewer from "../pdfviewer";
+import dynamic from 'next/dynamic';
 
+const PDFViewer = dynamic(() => import('../pdfviewer'), { ssr: false });
 
 export default function RefutationPaper() {
 
