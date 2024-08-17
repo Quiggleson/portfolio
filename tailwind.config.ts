@@ -33,17 +33,31 @@ const config: Config = {
             width: "100%",
             transform: 'scaleX(1)'
           }
+        },
+        expand: {
+          '0%': {
+            height: '0%'
+          },
+          '100%': {
+            height: 'h-full'
+          }
         }
       },
       animation: {
         fadeInBottom: 'fadeInBottom 1s ease-out',
-        fadeInUnderline: 'fadeInUnderline .5s'
+        fadeInUnderline: 'fadeInUnderline .5s',
+        expand: 'transition-height expand .5s ease-in-out'
       },
       colors: {
         'purple-com': '#7D26CD',
         'purple-hover': '#ddbbff',
         'purple-light': '#a868e3',
-        'button-hover': '#ff8700',
+        'button-hover': '#ccc',
+        'bg-light': '#d9d9d9'
+      },
+      transitionProperty: {
+        'max-height': 'max-height',
+        'filter': 'filter'
       }
     },
   },
