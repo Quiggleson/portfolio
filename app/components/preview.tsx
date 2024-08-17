@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-const basePath = process.env.ROOT_PATH;
+const basePath = process.env.NEXT_PUBLIC_ROOT_PATH;
 
 // Preview pages on the home page
 export interface PreviewProps {
@@ -32,9 +32,7 @@ export default function Preview({ props }: { props: PreviewProps }) {
                         <div className={`overflow-hidden justify-items-start transition-max-height duration-500 ease-in-out ${expanded ? 'max-h-[250px]' : 'max-h-0'}`}>
                             <div className="w-fit text-gray-500">{props.description}</div>
                             {props.links.map((link, i) =>
-                                <div key={i} className="ml-6 pl-2 rounded flex hover:bg-slate-100">
-                                    <a href={link.url} className={link.style ? link.style : ""}>{link.name}</a>
-                                </div>
+                                <a key={i} href={link.url} className={`ml-6 pl-2 rounded flex hover:bg-slate-100 ${link.style ? link.style : ""}`}>{link.name}</a>
                             )}
                         </div>
                     </div>

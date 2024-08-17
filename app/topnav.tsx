@@ -1,6 +1,6 @@
 'use client';
 
-const basePath = process.env.ROOT_PATH;
+const basePath = process.env.NEXT_PUBLIC_ROOT_PATH;
 
 export default function TopNav() {
     
@@ -8,8 +8,9 @@ export default function TopNav() {
         // Warning: home will link incorrectly on github pages
         {name: 'Home', link: '/'},
         {name: '3SAT', link: '/sat'},
-        {name: 'SATv2', link: '/satv2'},
         {name: 'Notes', link: '/notes'},
+        {name: 'Projects', link: '/projects'},
+        {name: 'Research', link: '/research'}
     ];
 
     return (
