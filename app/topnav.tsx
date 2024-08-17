@@ -6,10 +6,9 @@ export default function TopNav() {
     
     const buttons = [
         // Warning: home will link incorrectly on github pages
-        {name: 'Localhost Home', link: '/'},
+        {name: 'Home', link: basePath},
         {name: '3SAT', link: 'sat'},
         {name: 'SATv2', link: 'satv2'},
-        {name: 'GH Pages Home', link: '/portfolio'},
         {name: 'Notes', link: 'notes'},
     ];
 

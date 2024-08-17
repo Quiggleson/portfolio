@@ -18,7 +18,7 @@ export default function Preview({ props }: { props: PreviewProps }) {
 
     return (
         <div className="relative group text-xl">
-            <div className="absolute inset-0 bg-fixed bg-center blur-sm group-hover:blur-none transition-filter ease-in-out duration-500" style={{ backgroundImage: "url(" + basePath + props.picture + ")" }}>
+            <div className="absolute inset-0 bg-fixed bg-center blur-sm group-hover:blur-none transition-filter ease-in-out duration-500" style={{ backgroundImage: "url(" + props.picture + ")" }}>
             </div>
             <div className="relative z-10 w-full">
                 <button onClick={() => setExpanded(!expanded)} className="w-full h-full">
