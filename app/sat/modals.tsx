@@ -21,7 +21,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
 
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-black rounded outline outline-2 outline-black-50 relative max-w-xl min-w-content min-h-1/3">
+            <div className="bg-bg-default rounded outline outline-2 outline-black-50 relative max-w-xl min-w-content min-h-1/3">
                 <div className="justify-between flex w-full p-2 h-1/6">
                     <div className="">Edit Clause</div>
                     <button onClick={close}>Close</button>
@@ -213,7 +213,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
 export function ControlsModal({ close }: { close: () => void }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-black rounded outline outline-2 outline-black-50 relative max-w-xl w-1/3 min-h-1/3">
+            <div className="bg-bg-default rounded outline outline-2 outline-black-50 relative max-w-xl w-1/3 min-h-1/3">
                 <div className="justify-between flex w-full p-2 h-1/6">
                     <div className="">Help & Controls</div>
                     <button onClick={close}>Close</button>
@@ -248,7 +248,7 @@ export function ControlsModal({ close }: { close: () => void }) {
 export function ConnectionsModal({ close, instance }: { close: () => void, instance: Instance }) {
     return (
         <div className="fixed inset-0 flex items-center justify-center z-50">
-            <div className="bg-black rounded outline outline-2 outline-black-50 relative max-w-xl w-1/3 min-h-1/3">
+            <div className="bg-bg-default rounded outline outline-2 outline-black-50 relative max-w-xl w-1/3 min-h-1/3">
                 <div className="justify-between flex w-full p-2 h-1/6">
                     <div className="">Connections</div>
                     <button onClick={close}>Close</button>

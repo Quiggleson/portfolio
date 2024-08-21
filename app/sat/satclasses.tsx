@@ -57,13 +57,13 @@ export class Clause {
         var unknownCopy = new Set<TermSet>();
         var excludedCopy = new Set<TermSet>();
         this.known.forEach((term) => {
-            knownCopy.add(term);
+            knownCopy.add(term.copy());
         })
         this.unknown.forEach((term) => {
-            unknownCopy.add(term);
+            unknownCopy.add(term.copy());
         })
         this.excluded.forEach((term) => {
-            excludedCopy.add(term);
+            excludedCopy.add(term.copy());
         })
         return new Clause(this.name, this.length, this.col, unknownCopy, knownCopy, excludedCopy, this.id);
     }
@@ -117,14 +117,26 @@ export class Clause {
         return names;
     }
 
-    update(clause: Clause) {
+    update(clause: Clause, instance?: Instance) {
         this.id = clause.id;
         this.name = clause.name;
         this.length = clause.length;
         this.col = clause.col;
-        this.known = clause.known;
-        this.unknown = clause.unknown;
-        this.excluded = clause.excluded;
+        if (instance === undefined) {
+            this.known = clause.known;
+            this.unknown = clause.unknown;
+            this.excluded = clause.excluded;
+        } else {
+            clause.known.forEach((t) => {
+                this.known.add(instance.getTerm(t.id)!);        
+            })
+            clause.unknown.forEach((t) => {
+                this.unknown.add(instance.getTerm(t.id)!);
+            })
+            clause.excluded.forEach((t) => {
+                this.excluded.add(instance.getTerm(t.id)!);
+            })
+        }
     }
 
     inUnknown(term: TermSet) {
@@ -186,6 +198,7 @@ export class Clause {
         }
         return dupe;
     }
+
 }
 
 export class TermSet {
@@ -248,6 +261,25 @@ export class TermSet {
             terms.add(TermSet.from(term, instance));
         })
         return terms;
+    }
+
+    copy() {
+        var knownCopy = new Set<TermSet>();
+        this.known.forEach((term) => {
+            knownCopy.add(term.copy());
+        })
+        return new TermSet(this.name, this.length, knownCopy, this.id);
+    }
+
+    update(instance: Instance) {
+        const t = instance.getTerm(this.id);
+        this.known.forEach((term) => {
+            t?.known.add(instance.getTerm(term.id)!);
+            instance.getClauses(undefined, undefined, t)?.forEach((clause) => {
+                clause.known.add(instance.getTerm(term.id)!);
+            })
+
+        })
     }
 
 }
@@ -494,7 +526,7 @@ export class Instance {
                             c.known.add(localKnown);
                         })
                         localUnk.known.add(localKnown);
-                        const newInstances = instance._process(current+1, max);
+                        const newInstances = instance._process(current + 1, max);
                         instances = instances.concat(newInstances);
                     } else {
                         console.log('We misplaced a term');
@@ -513,15 +545,15 @@ export class Instance {
         // 1. You only have to place the terms in the last expanded clauses
         // 2. In each reduction, everything but the immediate opp form terms are shared between the clauses
         // 3. So for each clause of the final expanded clauses,
-            // 3.a add clauses in all possible sets
-            // 3.b make sure the original 3-t clause's sets have at least one opp form term
-        
+        // 3.a add clauses in all possible sets
+        // 3.b make sure the original 3-t clause's sets have at least one opp form term
+
         // The current bigsave.json (3 -> 4 -> 5 -> 4 -> 3) should result in 32 instances
-            
+
         if (current >= max) { return [] };
         var instances: Instance[] = [this];
         this.addOpposites();
-        
+
         // Find the proper clauses - how to identify them? Hmmm, difficult because relation could change with placing new implications
         // I think if the initial expansion ancestor is a 3-t clause and it does not expand to more
         const clauses = this.findClausesforPlacement();
@@ -547,6 +579,80 @@ export class Instance {
         instances = instances.filter((instance, i) => instances.find(j => j.equals(instance)) === instance);
         console.log('new instances: ' + JSON.stringify(instances));
         return instances.filter(i => !i.equals(this));
+    }
+
+    temp_process() {
+        this.addOpposites();
+
+        const clauses = this.findClausesforPlacement();
+
+        const possibleClauses: Clause[][] = [];
+
+        clauses.forEach((clause) => {
+            const terms = this.getTermstoPlace(clause);
+            const base = this.getBase(clause);
+            const placements = this.helper(clause, terms).filter(c => c.getTerm(base.id)?.known.size);
+            possibleClauses.push(placements);
+            console.log('placements for ' + clause.name);
+            console.log(JSON.stringify(placements));
+        })
+
+        const orderedClauses = this.getOrderedClauses(possibleClauses);
+        console.log(JSON.stringify(orderedClauses));
+
+        const instances: Instance[] = [];
+
+        orderedClauses.forEach((group) => {
+            const instance = this.copy();
+            group.forEach((clause) => {
+                clause.getAllTerms().forEach((term) => {
+                    term.update(instance);
+                });
+            })
+            instances.push(instance);
+        })
+
+        return instances;
+    }
+
+    // Given a list of list of clauses in which each inner list represents all possible placements of that clause,
+    // Return all possible instances (all possible combinations of the clauses - selecting 1 from each list)
+    getPossibleInstances(clauses: Clause[][]) {
+        // 1. Get list of lists where each list holds exactly one clause from above
+
+
+        // 2. Copy the instances for each of those items
+    }
+
+    getOrderedClauses(clauses: Clause[][]) {
+        if (clauses.length == 1) {
+            const ans: Clause[][] = [];
+            clauses[0].forEach((c) => ans.push([c]));
+            return ans;
+        }
+        var ans: Clause[][] = [];
+        const rest = this.getOrderedClauses(clauses.slice(1));
+        clauses[0].forEach((clause) => {
+            rest?.forEach((c) => {
+                ans.push([clause, ...c]);
+            })
+        })
+        return ans;
+    }
+
+    // Return list of clauses for each possible term placement, guarantees base has at least one
+    helper(clause: Clause, terms: TermSet[]) {
+        if (terms.length == 0) {
+            return [clause];
+        }
+        var ans: Clause[] = [];
+        Array.from(clause.unknown).filter(x => x.getSpace() > 0).forEach((unk) => {
+            const c = clause.copy();
+            c.getTerm(unk.id)?.known.add(terms[0]);
+            const rest = this.helper(c, terms.filter(x => x != terms[0]));
+            ans = [...ans, ...rest];
+        })
+        return ans;
     }
 
     placerHelper(terms: TermSet[], clause: Clause): Instance[] {

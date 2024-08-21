@@ -53,7 +53,8 @@ const config: Config = {
         'purple-hover': '#ddbbff',
         'purple-light': '#a868e3',
         'button-hover': '#ccc',
-        'bg-light': '#d9d9d9'
+        'bg-light': '#d9d9d9',
+        'bg-default': '#bfbfbf'
       },
       transitionProperty: {
         'max-height': 'max-height',

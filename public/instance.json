@@ -1,1 +1,248 @@
-{"messages": [],"clauses":[{"id":"df722ab6-7a17-4fa4-bb8a-8bcccf511c7f","name":"A","length":3,"col":2,"known":[],"unknown":[{"id":"1c097db5-8231-42b3-b6a9-6ec569571776","name":"α","length":1,"known":[]}],"excluded":[]},{"id":"3e8ce862-5755-4798-bf12-55bc2b6661ea","name":"B","length":3,"col":2,"known":[],"unknown":[{"id":"70e3d5a1-9065-443d-943d-ddea11e2f6ee","name":"β","length":1,"known":[]}],"excluded":[]},{"id":"c3ed3562-321b-4028-8202-512066039ae1","name":"C","length":4,"col":3,"known":[],"unknown":[{"id":"1c64d72d-fe09-4fc5-9266-0510ab577071","name":"δ","length":1,"known":[]},{"id":"1c097db5-8231-42b3-b6a9-6ec569571776","name":"α","length":1,"known":[]}],"excluded":[]},{"id":"b0f74cb8-5505-4669-bfea-d45baefbb420","name":"D","length":4,"col":3,"known":[],"unknown":[{"id":"d06951ab-257f-4eb3-8cdc-912ca8dcb1b7","name":"ζ","length":1,"known":[]},{"id":"70e3d5a1-9065-443d-943d-ddea11e2f6ee","name":"β","length":1,"known":[]}],"excluded":[]},{"id":"965c6cf9-844b-43f0-b9a1-75e4ee9c32f5","name":"E","length":3,"col":4,"known":[],"unknown":[{"id":"878e3b60-9583-4473-b2a6-ef035dee65d9","name":"η","length":1,"known":[]}],"excluded":[]}],"connections":[{"type":1,"id":"217ab6dd-e49a-4491-bfdd-39789ee60c30","input":{"id":"df722ab6-7a17-4fa4-bb8a-8bcccf511c7f","name":"A","length":3,"col":2,"known":[],"unknown":[{"id":"1c097db5-8231-42b3-b6a9-6ec569571776","name":"α","length":1,"known":[]}],"excluded":[]},"output":{"id":"c3ed3562-321b-4028-8202-512066039ae1","name":"C","length":4,"col":3,"known":[],"unknown":[{"id":"1c64d72d-fe09-4fc5-9266-0510ab577071","name":"δ","length":1,"known":[]},{"id":"1c097db5-8231-42b3-b6a9-6ec569571776","name":"α","length":1,"known":[]}],"excluded":[]}},{"type":1,"id":"835bc2d4-49c6-4c55-960b-fe5f697b9347","input":{"id":"3e8ce862-5755-4798-bf12-55bc2b6661ea","name":"B","length":3,"col":2,"known":[],"unknown":[{"id":"70e3d5a1-9065-443d-943d-ddea11e2f6ee","name":"β","length":1,"known":[]}],"excluded":[]},"output":{"id":"b0f74cb8-5505-4669-bfea-d45baefbb420","name":"D","length":4,"col":3,"known":[],"unknown":[{"id":"d06951ab-257f-4eb3-8cdc-912ca8dcb1b7","name":"ζ","length":1,"known":[]},{"id":"70e3d5a1-9065-443d-943d-ddea11e2f6ee","name":"β","length":1,"known":[]}],"excluded":[]}},{"type":0,"id":"50724081-a63f-4c6e-a3ed-fddd9a51299c","positive":{"id":"c3ed3562-321b-4028-8202-512066039ae1","name":"C","length":4,"col":3,"known":[],"unknown":[{"id":"1c64d72d-fe09-4fc5-9266-0510ab577071","name":"δ","length":1,"known":[]},{"id":"1c097db5-8231-42b3-b6a9-6ec569571776","name":"α","length":1,"known":[]}],"excluded":[]},"negative":{"id":"b0f74cb8-5505-4669-bfea-d45baefbb420","name":"D","length":4,"col":3,"known":[],"unknown":[{"id":"d06951ab-257f-4eb3-8cdc-912ca8dcb1b7","name":"ζ","length":1,"known":[]},{"id":"70e3d5a1-9065-443d-943d-ddea11e2f6ee","name":"β","length":1,"known":[]}],"excluded":[]},"output":{"id":"965c6cf9-844b-43f0-b9a1-75e4ee9c32f5","name":"E","length":3,"col":4,"known":[],"unknown":[{"id":"878e3b60-9583-4473-b2a6-ef035dee65d9","name":"η","length":1,"known":[]}],"excluded":[]},"processed":false}]}
+{
+    "messages": [],
+    "clauses": [
+        {
+            "id": "df722ab6-7a17-4fa4-bb8a-8bcccf511c7f",
+            "name": "A",
+            "length": 3,
+            "col": 2,
+            "known": [],
+            "unknown": [
+                {
+                    "id": "1c097db5-8231-42b3-b6a9-6ec569571776",
+                    "name": "α",
+                    "length": 3,
+                    "known": []
+                }
+            ],
+            "excluded": []
+        },
+        {
+            "id": "3e8ce862-5755-4798-bf12-55bc2b6661ea",
+            "name": "B",
+            "length": 3,
+            "col": 2,
+            "known": [],
+            "unknown": [
+                {
+                    "id": "70e3d5a1-9065-443d-943d-ddea11e2f6ee",
+                    "name": "β",
+                    "length": 3,
+                    "known": []
+                }
+            ],
+            "excluded": []
+        },
+        {
+            "id": "c3ed3562-321b-4028-8202-512066039ae1",
+            "name": "C",
+            "length": 4,
+            "col": 3,
+            "known": [],
+            "unknown": [
+                {
+                    "id": "1c64d72d-fe09-4fc5-9266-0510ab577071",
+                    "name": "δ",
+                    "length": 1,
+                    "known": []
+                },
+                {
+                    "id": "1c097db5-8231-42b3-b6a9-6ec569571776",
+                    "name": "α",
+                    "length": 3,
+                    "known": []
+                }
+            ],
+            "excluded": []
+        },
+        {
+            "id": "b0f74cb8-5505-4669-bfea-d45baefbb420",
+            "name": "D",
+            "length": 4,
+            "col": 3,
+            "known": [],
+            "unknown": [
+                {
+                    "id": "d06951ab-257f-4eb3-8cdc-912ca8dcb1b7",
+                    "name": "ζ",
+                    "length": 1,
+                    "known": []
+                },
+                {
+                    "id": "70e3d5a1-9065-443d-943d-ddea11e2f6ee",
+                    "name": "β",
+                    "length": 3,
+                    "known": []
+                }
+            ],
+            "excluded": []
+        },
+        {
+            "id": "965c6cf9-844b-43f0-b9a1-75e4ee9c32f5",
+            "name": "E",
+            "length": 3,
+            "col": 4,
+            "known": [],
+            "unknown": [
+                {
+                    "id": "878e3b60-9583-4473-b2a6-ef035dee65d9",
+                    "name": "η",
+                    "length": 1,
+                    "known": []
+                }
+            ],
+            "excluded": []
+        }
+    ],
+    "connections": [
+        {
+            "type": 1,
+            "id": "217ab6dd-e49a-4491-bfdd-39789ee60c30",
+            "input": {
+                "id": "df722ab6-7a17-4fa4-bb8a-8bcccf511c7f",
+                "name": "A",
+                "length": 3,
+                "col": 2,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "1c097db5-8231-42b3-b6a9-6ec569571776",
+                        "name": "α",
+                        "length": 3,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            },
+            "output": {
+                "id": "c3ed3562-321b-4028-8202-512066039ae1",
+                "name": "C",
+                "length": 4,
+                "col": 3,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "1c64d72d-fe09-4fc5-9266-0510ab577071",
+                        "name": "δ",
+                        "length": 1,
+                        "known": []
+                    },
+                    {
+                        "id": "1c097db5-8231-42b3-b6a9-6ec569571776",
+                        "name": "α",
+                        "length": 3,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            }
+        },
+        {
+            "type": 1,
+            "id": "835bc2d4-49c6-4c55-960b-fe5f697b9347",
+            "input": {
+                "id": "3e8ce862-5755-4798-bf12-55bc2b6661ea",
+                "name": "B",
+                "length": 3,
+                "col": 2,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "70e3d5a1-9065-443d-943d-ddea11e2f6ee",
+                        "name": "β",
+                        "length": 3,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            },
+            "output": {
+                "id": "b0f74cb8-5505-4669-bfea-d45baefbb420",
+                "name": "D",
+                "length": 4,
+                "col": 3,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "d06951ab-257f-4eb3-8cdc-912ca8dcb1b7",
+                        "name": "ζ",
+                        "length": 1,
+                        "known": []
+                    },
+                    {
+                        "id": "70e3d5a1-9065-443d-943d-ddea11e2f6ee",
+                        "name": "β",
+                        "length": 3,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            }
+        },
+        {
+            "type": 0,
+            "id": "50724081-a63f-4c6e-a3ed-fddd9a51299c",
+            "positive": {
+                "id": "c3ed3562-321b-4028-8202-512066039ae1",
+                "name": "C",
+                "length": 4,
+                "col": 3,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "1c64d72d-fe09-4fc5-9266-0510ab577071",
+                        "name": "δ",
+                        "length": 1,
+                        "known": []
+                    },
+                    {
+                        "id": "1c097db5-8231-42b3-b6a9-6ec569571776",
+                        "name": "α",
+                        "length": 3,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            },
+            "negative": {
+                "id": "b0f74cb8-5505-4669-bfea-d45baefbb420",
+                "name": "D",
+                "length": 4,
+                "col": 3,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "d06951ab-257f-4eb3-8cdc-912ca8dcb1b7",
+                        "name": "ζ",
+                        "length": 1,
+                        "known": []
+                    },
+                    {
+                        "id": "70e3d5a1-9065-443d-943d-ddea11e2f6ee",
+                        "name": "β",
+                        "length": 3,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            },
+            "output": {
+                "id": "965c6cf9-844b-43f0-b9a1-75e4ee9c32f5",
+                "name": "E",
+                "length": 3,
+                "col": 4,
+                "known": [],
+                "unknown": [
+                    {
+                        "id": "878e3b60-9583-4473-b2a6-ef035dee65d9",
+                        "name": "η",
+                        "length": 1,
+                        "known": []
+                    }
+                ],
+                "excluded": []
+            },
+            "processed": false
+        }
+    ]
+}

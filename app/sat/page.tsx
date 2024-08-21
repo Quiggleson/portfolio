@@ -171,7 +171,8 @@ export default function Sat2() {
             <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => setInstances([...instances, instances[current].copy()])}>Copy Instance</button>
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => checkInstance(instances[current])}>Check Instance</button> */}
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => { instances[current].addOpposites(); setInstances([...instances]) }}>Add Opposite Form Terms</button> */}
-            <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].process(0, 1)])}>PROCESS</button>
+            {/* <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].process(0, 1)])}>PROCESS (before aug 20)</button> */}
+            <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].temp_process()])}>PROCESS</button>
             <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => {instances[current].addNewImplications(); setInstances([...instances])}}>Add new implications</button>
             <div className="flex">
                 {instances.map((instance, i) =>
