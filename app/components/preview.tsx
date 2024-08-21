@@ -25,12 +25,12 @@ export default function Preview({ props }: { props: PreviewProps }) {
                     <div className="h-[40vh]"></div>
                     <div className="pl-2 bg-bg-light h-fit py-2">
                         <div className="flex">
-                            <div>{props.name}</div>
+                            <div className="text-start">{props.name}</div>
                             {!expanded && <div className="pl-2">+</div>}
                             {expanded && <div className="pl-2">-</div>}
                         </div>
                         <div className={`overflow-hidden justify-items-start transition-max-height duration-500 ease-in-out ${expanded ? 'max-h-[250px]' : 'max-h-0'}`}>
-                            <div className="w-fit text-gray-500">{props.description}</div>
+                            <div className="w-fit text-gray-500 text-start">{props.description}</div>
                             {props.links.map((link, i) =>
                                 <a key={i} href={link.url} className={`ml-6 pl-2 rounded flex hover:bg-slate-100 text-start ${link.style ? link.style : ""}`}>{link.name}</a>
                             )}

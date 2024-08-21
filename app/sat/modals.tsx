@@ -223,22 +223,31 @@ export function ControlsModal({ close }: { close: () => void }) {
             </div> */}
                 </div>
                 <div className="p-2 grid grid-cols-[20%_auto]">
-                    <div>h</div>
-                    <div>Help<br />Open this help modal</div>
-                    <div>n</div>
-                    <div>Creates a new 3-t clause</div>
-                    <div>e</div>
-                    <div>Enter edit mode<br />Select a clause to edit it</div>
-                    <div>Shift</div>
-                    <div>Enter expansion mode<br />Select clause1 then clause2 to add an expansion connection from clause1 to clause2</div>
-                    <div>Control</div>
-                    <div>Enter implication mode<br />Select clause1 then clause2 then clause3 to add an implication connection such that clause1 and clause2 share an opposite form term and output clause3</div>
-                    {/* <div>Export/ Import</div>
-                    <div>Export or import the current instance in json format</div>
-                    <div>Copy Instance</div>
-                    <div>Create a new instance based on the current one</div>
-                    <div className="text-sm">Process Expansion</div>
-                    <div>(In progress) Add new instances based on possible term paths</div> */}
+                    <div className="my-1">h</div>
+                    <div className="my-1">Open this help modal</div>
+                    <div className="my-1">n</div>
+                    <div className="my-1">Creates a new 3-t clause in column 2</div>
+                    <div className="my-1">e</div>
+                    <div className="my-1">Enter edit mode - click a clause to edit it</div>
+                    <div className="my-1">i</div>
+                    <div className="my-1">Enter longest mode - click on a clause to get the longest term required to process it</div>
+                    <div className="my-1">Shift</div>
+                    <div className="my-1">Enter expansion mode<br />Select clause1 then clause2 to add an expansion connection from clause1 to clause2</div>
+                    <div className="my-1">Control</div>
+                    <div className="my-1">Enter implication mode<br />Select clause1 then clause2 then clause3 to add an implication connection such that clause1 and clause2 share an opposite form term and output clause3</div>
+                    <div className="my-1">View Connections</div>
+                    <div className="my-1">Open a modal to view the connections</div>
+                    <div className="my-1">Load Example</div>
+                    <div className="my-1">Load an example implication graph</div>
+                    <div className="my-1">Export/ Import</div>
+                    <div className="my-1">Export or import the current instance in json format</div>
+                    <div className="my-1">Copy Instance</div>
+                    <div className="my-1">Create a new instance based on the current one</div>
+                    <div className="my-1">Process</div>
+                    <div className="my-1">Add new instances based on possible term placements</div>
+                    <div className="my-1">Add new implications</div>
+                    <div className="my-1">Add new implications to the current instance based on what terms are placed</div>
+
                 </div>
             </div>
         </div>
