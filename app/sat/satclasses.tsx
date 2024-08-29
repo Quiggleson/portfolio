@@ -113,13 +113,19 @@ export class Clause {
             this.excluded = clause.excluded;
         } else {
             clause.known.forEach((t) => {
-                this.known.add(instance.getTerm(t.id)!);        
+                this.known.add(instance.getTerm(t.id)!);
+                instance.getTerm(t.id)!.length = t.length;
+                instance.getTerm(t.id)!.name = t.name;
             })
             clause.unknown.forEach((t) => {
                 this.unknown.add(instance.getTerm(t.id)!);
+                instance.getTerm(t.id)!.length = t.length;
+                instance.getTerm(t.id)!.name = t.name;
             })
             clause.excluded.forEach((t) => {
                 this.excluded.add(instance.getTerm(t.id)!);
+                instance.getTerm(t.id)!.length = t.length;
+                instance.getTerm(t.id)!.name = t.name;
             })
         }
     }

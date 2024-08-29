@@ -9,7 +9,7 @@ export function EditClauseModal({ clause, close, instance }: { clause: Clause, c
 
     function handleSubmit(event: React.FormEvent) {
         event.preventDefault();
-        clause.update(tempClause);
+        clause.update(tempClause, instance);
         close();
     }
 
