@@ -36,17 +36,28 @@ const config: Config = {
         },
         expand: {
           '0%': {
-            height: '0%'
+            height: '0-px'
           },
           '100%': {
             height: 'h-full'
+          }
+        },
+        expandW: {
+          '0%': {
+            maxWidth: "0px",
+            overflow: "hidden",
+          },
+          '100%': {
+            maxWidth: "100%",
+            transform: 'scaleX(1)'
           }
         }
       },
       animation: {
         fadeInBottom: 'fadeInBottom 1s ease-out',
         fadeInUnderline: 'fadeInUnderline .5s',
-        expand: 'transition-height expand .5s ease-in-out'
+        expand: 'transition-height expand .5s ease-in-out',
+        expandW: 'expandW 2s ease-in-out forwards'
       },
       colors: {
         'purple-com': '#7D26CD',
@@ -54,10 +65,12 @@ const config: Config = {
         'purple-light': '#a868e3',
         'button-hover': '#ccc',
         'bg-light': '#d9d9d9',
-        'bg-default': '#bfbfbf'
+        'bg-default': '#bfbfbf',
+        'line-color': '#000'
       },
       transitionProperty: {
         'max-height': 'max-height',
+        'max-width': 'max-width',
         'filter': 'filter'
       }
     },

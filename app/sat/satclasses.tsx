@@ -29,9 +29,7 @@ export class Clause {
         }
     }
 
-    // Reads known and unknown as lists
-    // WARNING, if the same term exists in known and unknown, it will get buggy
-    // WARNING: adds clause to instance
+    // Takes in json object representing a clause and updates instance in place
     static from(json: any, instance: Instance) {
         const c = instance.getClauses(json.id);
         if (c) { return c[0] };
@@ -43,15 +41,14 @@ export class Clause {
         return clause;
     }
 
+    // Updates instance in place so it can reference the correct term objects
     static fromList(json: any, instance: Instance) {
         json.forEach((clause: any) => {
             Clause.from(clause, instance);
-            // no longer have to push since updating instance in place
-            // instance.clauses.push(Clause.from(clause, instance));
         })
     }
 
-    // Should only be used when copying for new instance as it copies the id
+    // makes an exact copy of the clause (with new termset objects)
     copy() {
         var knownCopy = new Set<TermSet>();
         var unknownCopy = new Set<TermSet>();
@@ -68,18 +65,7 @@ export class Clause {
         return new Clause(this.name, this.length, this.col, unknownCopy, knownCopy, excludedCopy, this.id);
     }
 
-    addKnown(term: TermSet) {
-        this.known.add(term);
-    }
-
-    addUnknown(term: TermSet) {
-        this.known.add(term);
-    }
-
-    addExcluded(term: TermSet) {
-        this.excluded.add(term);
-    }
-
+    // Get term with matching id or name
     getTerm(id?: string, name?: string) {
         var match: TermSet[] = [];
         if (id !== undefined) {
@@ -97,10 +83,8 @@ export class Clause {
         return undefined;
     }
 
+    // Get all terms in this clause, including excluded??
     getAllTerms() {
-        // console.log(JSON.stringify(Array.from(this.unknown)));
-        // console.log(JSON.stringify(Array.from(this.known)));
-        // console.log(JSON.stringify(Array.from(this.excluded)));
         var terms = this.known.union(this.unknown);
         terms = terms.union(this.excluded);
         this.unknown.forEach((unknown) => {
@@ -109,6 +93,7 @@ export class Clause {
         return terms;
     }
 
+    // Get all terms' names
     getTermNames() {
         var names = new Set<string>();
         this.getAllTerms().forEach((term) => {
@@ -241,12 +226,6 @@ export class TermSet {
     static from(json: any, instance: Instance) {
         const t = instance.getTerm(json.id);
         if (t) { return t };
-        // var known = new Set<TermSet>();
-        // json.known.forEach((term: any) => {
-        //     known.add(TermSet.from(term, instance));
-        // })
-
-        // console.log('adding new term ' + json.name);
         return new TermSet(
             json.name,
             json.length,
@@ -263,6 +242,7 @@ export class TermSet {
         return terms;
     }
 
+    // Returns exact copy of termset as well as copies of this.known
     copy() {
         var knownCopy = new Set<TermSet>();
         this.known.forEach((term) => {
@@ -337,6 +317,29 @@ export class Instance {
         }
     }
 
+    addClause(length?: number, col?: number) {
+        const used = this.getClauseNames();
+        const names = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        var i = 0;
+        var name;
+        while (i < names.length && used.has(names[i])) { i++ };
+        var c: Clause;
+        if (i === names.length) {
+            name = 'A'
+        } else {
+            name = names[i]
+        }
+        c = new Clause(name, 3, 2);
+        if (length !== undefined) {
+            c.length = length
+        }
+        if (col !== undefined) {
+            c.col = col
+        }
+        this.clauses.push(c);
+        return c;
+    }
+
     getClauses(id?: string, known?: TermSet, unknown?: TermSet) {
         if (id) {
             const clauseList = this.clauses.filter((clause) => clause.id === id);
@@ -398,27 +401,12 @@ export class Instance {
         return terms;
     }
 
-    addClause() {
-        const used = this.getClauseNames();
-        const names = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        var i = 0;
-        while (i < names.length && used.has(names[i])) { i++ };
-        var c: Clause;
-        if (i === names.length) {
-            c = new Clause('A', 3, 2);
-        } else {
-            c = new Clause(names[i], 3, 2);
-        }
-        this.clauses.push(c);
-        return c;
-    }
-
     addOpposites() {
         this.getImplications().forEach((im) => {
             if (Array.from(im.positive.known).filter((t) => im.negative.getTerm(undefined, '-' + t.name)).length) { return; }
             const term = this.addKnown(im.positive);
             const negativeTerm = new TermSet('-' + term.name, 1);
-            im.negative.addKnown(negativeTerm);
+            im.negative.known.add(negativeTerm);
             im.output.excluded = im.output.excluded.union(new Set([term, negativeTerm]));
             im.processed = true;
 
@@ -471,15 +459,12 @@ export class Instance {
 
     copy() {
         const json = this.toJSON();
-        return Instance.from(json); // lol
+        return Instance.from(json);
     }
 
     getFloatingTerms() {
         const known = this.getKnownTerms();
         const placed = this.getPlacedTerms();
-        // console.log('known: ' + JSON.stringify(Array.from(known)));
-        // console.log('placed: ' + JSON.stringify(Array.from(placed)));
-        // console.log('checking instance ' + JSON.stringify(this));
 
         const floatingTerms = Array.from(known).filter((k) => {
             return !placed.has(k);
@@ -506,82 +491,7 @@ export class Instance {
         return terms;
     }
 
-    // oh boy, this is the big one
-    _process(current: number, max: number) {
-        console.log('current: ' + current);
-        if (current >= max) { return [] };
-        var instances: Instance[] = [this];
-        this.addOpposites();
-        this.clauses.forEach((clause) => {
-            Array.from(clause.known).filter((known) => !clause.inUnknown(known)).filter(k => !clause.excluded.has(k)).forEach((known) => {
-                console.log('inspecting known ' + known.name);
-                Array.from(clause.unknown).filter((unk) => unk.getSpace() > 0).forEach((unk) => {
-                    // console.log('inspecting unknown ' + unk.name);
-                    const instance = this.copy();
-                    const localUnk = instance.getTerm(unk.id);
-                    const localKnown = instance.getTerm(known.id);
-                    const localClauses = instance.getClauses(undefined, undefined, localUnk);
-                    if (localUnk && localKnown && localClauses) {
-                        localClauses.forEach((c) => {
-                            c.known.add(localKnown);
-                        })
-                        localUnk.known.add(localKnown);
-                        const newInstances = instance._process(current + 1, max);
-                        instances = instances.concat(newInstances);
-                    } else {
-                        console.log('We misplaced a term');
-                    }
-                })
-            })
-        })
-        // Remove instances with floating terms and unique based on instance.equals()
-        instances = instances.filter((instance) => instance.getFloatingTerms().length === 0);
-        instances = instances.filter((instance, i) => instances.find(j => j.equals(instance)) === instance);
-        return instances;
-    }
-
-    process(current: number, max: number) {
-        // Get the clauses where you'll be placing the opp form terms. Note the following
-        // 1. You only have to place the terms in the last expanded clauses
-        // 2. In each reduction, everything but the immediate opp form terms are shared between the clauses
-        // 3. So for each clause of the final expanded clauses,
-        // 3.a add clauses in all possible sets
-        // 3.b make sure the original 3-t clause's sets have at least one opp form term
-
-        // The current bigsave.json (3 -> 4 -> 5 -> 4 -> 3) should result in 32 instances
-
-        if (current >= max) { return [] };
-        var instances: Instance[] = [this];
-        this.addOpposites();
-
-        // Find the proper clauses - how to identify them? Hmmm, difficult because relation could change with placing new implications
-        // I think if the initial expansion ancestor is a 3-t clause and it does not expand to more
-        const clauses = this.findClausesforPlacement();
-
-        // Iterate clauses
-        clauses.forEach((clause) => {
-            // Get the proper terms to place - A E I have c and a, B F J have c and -a
-            const terms = this.getTermstoPlace(clause);
-            const base = this.getBase(clause);
-
-            console.log('terms to place in clause ' + clause.name + ': ' + JSON.stringify(terms));
-
-            // Place le terms!
-            terms.forEach((term) => {
-                const instance = this.placeTerm(term, base);
-                instances.push(instance);
-                const newinstances = instance.placerHelper(terms.filter(t => t.id !== term.id), instance.getClauses(clause.id)![0]);
-                instances = [...instances, ...newinstances];
-            })
-        })
-        console.log('before processing: ' + JSON.stringify(instances));
-        // instances = instances.filter((instance) => instance.getFloatingTerms().length === 0);
-        instances = instances.filter((instance, i) => instances.find(j => j.equals(instance)) === instance);
-        console.log('new instances: ' + JSON.stringify(instances));
-        return instances.filter(i => !i.equals(this));
-    }
-
-    temp_process() {
+    process() {
         this.addOpposites();
 
         const clauses = this.findClausesforPlacement();
@@ -615,15 +525,6 @@ export class Instance {
         return instances;
     }
 
-    // Given a list of list of clauses in which each inner list represents all possible placements of that clause,
-    // Return all possible instances (all possible combinations of the clauses - selecting 1 from each list)
-    getPossibleInstances(clauses: Clause[][]) {
-        // 1. Get list of lists where each list holds exactly one clause from above
-
-
-        // 2. Copy the instances for each of those items
-    }
-
     getOrderedClauses(clauses: Clause[][]) {
         if (clauses.length == 1) {
             const ans: Clause[][] = [];
@@ -653,26 +554,6 @@ export class Instance {
             ans = [...ans, ...rest];
         })
         return ans;
-    }
-
-    placerHelper(terms: TermSet[], clause: Clause): Instance[] {
-        console.log('placing terms ' + JSON.stringify(terms) + ' in clause ' + JSON.stringify(Array.from(clause.unknown)));
-        if (terms.length == 0) {
-            return [this];
-        }
-        var instances: Instance[] = [];
-        terms.forEach((term) => {
-            clause.unknown.forEach((unk) => {
-                if (unk.getSpace() > 0) {
-                    const instance = this.copy();
-                    instance.getTerm(unk.id)?.known.add(instance.getTerm(term.id)!);
-                    const newinstances = instance.placerHelper(terms.filter(t => t.id !== term.id), instance.getClauses(clause.id)![0]);
-                    instances = [...instances, ...newinstances];
-                }
-            })
-        })
-        return instances;
-
     }
 
     // Return a copy of instance placing term in unknown

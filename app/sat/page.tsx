@@ -52,10 +52,16 @@ export default function Sat2() {
                 setSelected([]);
                 break;
             }
-            // case 'c': {
-            //     mode === '' ? setMode('copy') : setMode('');
-            //     setSelected([]);
-            // }
+            case 'c': {
+                mode === '' ? setMode('copy') : setMode('');
+                setSelected([]);
+                break;
+            }
+            case 'd': {
+                mode === '' ? setMode('delete') : setMode('');
+                setSelected([]);
+                break;
+            }
             // case 't': {
             //     mode === '' ? setMode('newTerm') : setMode('');
             //     setSelected([]);
@@ -91,14 +97,22 @@ export default function Sat2() {
             console.log('Instance: ' + JSON.stringify(instances[current]));
             console.log('floating terms: ' + JSON.stringify(instances[current].getFloatingTerms()))
             setModal('editclause');
-            // }
-            // else if (mode === 'copy' && selected.length === 0) {
-            //     setClauses([...clauses, createClause(undefined, clause.length, Array.from(clause.knownTerms), clauses)]);
-            //     setSelected([]);
-            // } else if (mode === 'newTerm') {
-            //     instances[current].getClause(clause.id)?.addTerm(instances[current]);
-            //     setSelected([]);
         }
+        else if (mode === 'copy' && selected.length === 0) {
+            const c = instances[current].addClause(clause.length, clause.col);
+            instances[current].addUnknown(c);
+            setInstances([...instances]);
+            setSelected([]);
+        }
+        else if (mode === 'delete' && selected.length == 0) {
+            const instance = instances[current]
+            instance.clauses = [...instance.clauses.filter((c) => c.id !== clause.id)];
+            instance.connections = [...instance.connections.filter((con) => !con.getClauses().includes(clause))]
+            setSelected([]);
+        }
+        // } else if (mode === 'newTerm') {
+        //     instances[current].getClause(clause.id)?.addTerm(instances[current]);
+        //     setSelected([]);
         else if (mode === 'longest' && selected.length === 0) {
             instances[current].getLongestRequiredClause(clause);
             setSelected([]);
@@ -178,11 +192,11 @@ export default function Sat2() {
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => checkInstance(instances[current])}>Check Instance</button> */}
             {/* <button className="block outline rounded px-2 hover:bg-button-hover my-2" onClick={() => { instances[current].addOpposites(); setInstances([...instances]) }}>Add Opposite Form Terms</button> */}
             {/* <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].process(0, 1)])}>PROCESS (before aug 20)</button> */}
-            <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].temp_process()])}>PROCESS</button>
+            <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => setInstances([...instances, ...instances[current].process()])}>PROCESS</button>
             <button className="block outline outline-4 rounded px-2 hover:bg-button-hover my-4 mx-1" onClick={() => {instances[current].addNewImplications(); setInstances([...instances])}}>Add new implications</button>
             <div className="flex">
                 {instances.map((instance, i) =>
-                    <button key={i} className={"outline rounded-t px-2 mx-1 " + (current === i ? "bg-button-hover" : "hover:bg-button-hover")} onClick={() => setCurrent(i)}>
+                    <button key={i} className={"outline rounded-t px-2 mx-1 truncate " + (current === i ? "bg-button-hover" : "hover:bg-button-hover") + (i !== 0 ? " animate-expandW ": "")} onClick={() => setCurrent(i)}>
                         Instance {i}
                     </button>
                 )}

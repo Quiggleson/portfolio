@@ -94,7 +94,7 @@ export function RenderExpansion({ expansion }: { expansion: Expansion }) {
 
     return (
         <line
-            className="stroke-button-hover stroke-2"
+            className="stroke-line-color stroke-2"
             x1={input.right}
             y1={(input.top + input.bottom) / 2}
             x2={output.left}
@@ -109,36 +109,46 @@ export function RenderImplication({ implication }: { implication: Implication })
     const positive = document.getElementById(implication.positive.id) ? document.getElementById(implication.positive.id)!.getBoundingClientRect() : defaultObj;
     const negative = document.getElementById(implication.negative.id) ? document.getElementById(implication.negative.id)!.getBoundingClientRect() : defaultObj;
     const output = document.getElementById(implication.output.id) ? document.getElementById(implication.output.id)!.getBoundingClientRect() : defaultObj;
+    var first, second;
+    if (positive.left < negative.left) {
+        first = positive;
+        second = negative;
+    } else {
+        first = negative;
+        second = positive;
+    }
+    const bottom = Math.min((positive.bottom + positive.top) / 2, (negative.bottom + negative.top) / 2, (output.bottom + output.top) / 2);
+    const top = Math.max((positive.bottom + positive.top) / 2, (negative.bottom + negative.top) / 2, (output.bottom + output.top) / 2);
 
     return (
         <>
             <line
-                className="stroke-button-hover stroke-2"
-                x1={positive.right}
-                y1={(positive.top + positive.bottom) / 2}
-                x2={(positive.right + output.left) / 2}
-                y2={(positive.top + positive.bottom) / 2}
+                className="stroke-line-color stroke-2"
+                x1={first.right}
+                y1={(first.top + first.bottom) / 2}
+                x2={(second.right + output.left) / 2}
+                y2={(first.top + first.bottom) / 2}
             />
             <line
-                className="stroke-button-hover stroke-2"
-                x1={negative.right}
-                y1={(negative.top + negative.bottom) / 2}
-                x2={(negative.right + output.left) / 2}
-                y2={(negative.top + negative.bottom) / 2}
+                className="stroke-line-color stroke-2"
+                x1={second.right}
+                y1={(second.top + second.bottom) / 2}
+                x2={(second.right + output.left) / 2}
+                y2={(second.top + second.bottom) / 2}
             />
             <line
-                className="stroke-button-hover stroke-2"
-                x1={(positive.right + output.left) / 2}
-                y1={(positive.top + positive.bottom) / 2}
+                className="stroke-line-color stroke-2"
+                x1={(second.right + output.left) / 2}
+                y1={(output.top + output.bottom) / 2}
                 x2={output.left}
-                y2={(positive.top + positive.bottom) / 2}
+                y2={(output.top + output.bottom) / 2}
             />
             <line
-                className="stroke-button-hover stroke-2"
-                x1={(positive.right + output.left) / 2}
-                y1={(positive.top + positive.bottom) / 2}
-                x2={(positive.right + output.left) / 2}
-                y2={(negative.top + negative.bottom) / 2}
+                className="stroke-line-color stroke-2"
+                x1={(second.right + output.left) / 2}
+                y1={top}
+                x2={(second.right + output.left) / 2}
+                y2={bottom}
             />
         </>
     );
