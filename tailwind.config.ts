@@ -66,7 +66,8 @@ const config: Config = {
         'button-hover': '#ccc',
         'bg-light': '#d9d9d9',
         'bg-default': '#bfbfbf',
-        'line-color': '#000'
+        'line-color': '#000',
+        'warning': '#FF0000'
       },
       transitionProperty: {
         'max-height': 'max-height',
