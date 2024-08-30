@@ -12,7 +12,7 @@ export default function RefutationPaper() {
         <div>
             <div className="ml-2 mt-2 mb-10">
                 <h1 className="text-3xl">A Refutation of Popular Diagonalization Applications</h1>
-                <a href={`${basePath ? basePath : '' }/quigley_3satpaper.pdf`} target="_blank" className="text-xl rounded hover:bg-bg-light px-2">Download PDF</a>
+                <a href={`${basePath ? basePath : '' }/quigley_3satpaper.pdf`} target="_blank" className="outline text-xl rounded hover:bg-bg-light px-2">Download PDF</a>
             </div>
             <PDFViewer 
             file={`${basePath ? basePath : '' }/quigley_3satpaper.pdf`}
