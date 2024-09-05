@@ -8,6 +8,7 @@ import ClauseRedesign from "./clauseredesign";
 import DownloadExample from "./downloadexample";
 import August7 from "./august7";
 import PlaceClause from "./placeclause";
+import August30 from "./aug30";
 
 export default function Notes() {
 
@@ -76,6 +77,10 @@ export default function Notes() {
                 <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('8')}>+</button>[August 20] Placing Known Terms</h1>
                 {sections.includes('8') &&
                     <PlaceClause />
+                }
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('9')}>+</button>[August 30] Reestablish the Goal</h1>
+                {sections.includes('9') &&
+                    <August30 />
                 }
             </div>
         </div>
