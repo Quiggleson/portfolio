@@ -43,6 +43,15 @@ export default function August30() {
             <p>2. (a, b, c, e, g) and (a, b, c, f, -g) implies (a, b, c, e, f)</p>
             <p>3, (a, b, e, f, g) and (b, c, e, f, -g) implies (a, b, c, e, f)</p>
         </div>
+        <p>---</p>
+        <p>Alright, I think I&apos;d like to establish the algorithm more along the lines of how I think about the problem</p>
+        <p>Given the implication graph, we know some terms have to be in certain places</p>
+        <p>We also know we want to derive the final output without processing a clause of length X (probably requires user input). </p>
+        <p>(Let X be input clause length + 2) As such, we know the input clauses must all have an opposite form term otherwise the input could directly imply the output.</p>
+        <p>We also know the paths each clause will take so there is a list of oppostie form terms that could exist in one clause</p>
+        <p>It can be observed that by the pigeonhole principle, at least one pair of opposite form terms exist among the input clauses.</p>
+        <p>Therefore that output clause must have another opposite form term otherwise we can directly imply the final output clause.</p>
+        <p>Also a nice to have would be input a sequence like (3 expand 4 expand 5 imply 5 imply 4 imply 3) and it would output the implication graph.</p>
     </div>
     );
 }

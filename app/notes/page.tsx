@@ -9,6 +9,7 @@ import DownloadExample from "./downloadexample";
 import August7 from "./august7";
 import PlaceClause from "./placeclause";
 import August30 from "./aug30";
+import Sep16 from "./sep16";
 
 export default function Notes() {
 
@@ -81,6 +82,10 @@ export default function Notes() {
                 <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('9')}>+</button>[August 30] Reestablish the Goal</h1>
                 {sections.includes('9') &&
                     <August30 />
+                }
+                <h1 className="font-bold"><button className="p-2" onClick={() => toggleSection('10')}>+</button>[Sep 16] Proof Outline</h1>
+                {sections.includes('10') &&
+                    <Sep16 />
                 }
             </div>
         </div>
