@@ -6,17 +6,6 @@ export default function Home() {
 
   const previews = [
     {
-      picture: "proofoutline.png",
-      name: "3SAT Update - Final Proof Outline",
-      description: "There was a bug in the algorithm where you had to process a clause greater than length 3 so the search was on to find the minimum length of the longest clause requiring processing. As long as this length is independent of the number of terminals, P = NP. On Sep 23rd I found a proof showing you only have to process clauses of up to length 4! The full paper is coming soon (and will replace those on this site so far), but here's a rough outline so far",
-      links: [
-        {
-          name: "Proof Outline", 
-          url: "research/3satproofoutline"
-        }
-      ]
-    },
-    {
       picture: "projects_preview.png",
       name: "Projects",
       description: "Projects I've enjoyed making",
@@ -37,11 +26,6 @@ export default function Home() {
           url: "research"
         },
         {
-          name: "3SAT 24 Sep 2024 Proof Outline", 
-          url: "research/3satproofoutline",
-          style: "italic"
-        },
-        {
           name: "A Polynomial Time Algorithm for 3SAT", 
           url: "research/3satpaper",
           style: "italic"
@@ -49,6 +33,11 @@ export default function Home() {
         {
           name: "A Refutation of Popular Diagonalization Applications", 
           url: "research/refutationpaper",
+          style: "italic"
+        },
+        {
+          name: "3SAT 24 Sep 2024 Proof Outline", 
+          url: "research/3satproofoutline",
           style: "italic"
         }
       ]

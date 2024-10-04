@@ -23,15 +23,8 @@ heavily rely on the second assumption.`,
         },
         {
             name: "A Polynomial Time Algorithm for 3SAT",
-            abstract: `It is shown that any two clauses in an instance of 3SAT sharing the same terminal which is positive in one clause and
-negated in the other can imply a new clause composed of the remaining terms from both clauses. Clauses can also
-imply other clauses as long as all the terms in the implying clauses exist in the implied clause. It is shown an instance
-of 3SAT is unsatisfiable if and only if it can derive contradicting 1-terminal clauses in exponential time. It is further
-shown that these contradicting clauses can be implied with the aforementioned techniques without processing clauses
-of length 4 or greater, reducing the computation to polynomial time. Therefore there is a polynomial time algorithm
-that will produce contradicting 1-terminal clauses if and only if the instance of 3SAT is unsatisfiable. Since such an
-algorithm exists and 3SAT is NP-Complete, we can conclude P = NP.`,
-            date: "January 2024 - August 2024",
+            abstract: `This paper presents a polynomial time algorithm for 3SAT using the idea of Implication which allows for the derivation of contradicting 1-terminal clauses iff the instance is unsatisfiable. The idea is that any two clauses which contain the same terminal which is positive in one clause and negated in the other can imply a new clause which consists of all the terms in either clause except for the opposite form terms. Two 1-terminal clauses which contain opposite form terms are called contradicting 1-terminal clauses and their existence implies the instance is unsatisfiable.`,
+            date: "January 2024 - October 2024",
             url: "/research/3satpaper"
         },
         {
