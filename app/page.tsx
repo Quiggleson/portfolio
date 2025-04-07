@@ -34,11 +34,6 @@ export default function Home() {
           name: "A Refutation of Popular Diagonalization Applications", 
           url: "research/refutationpaper",
           style: "italic"
-        },
-        {
-          name: "3SAT 24 Sep 2024 Proof Outline", 
-          url: "research/3satproofoutline",
-          style: "italic"
         }
       ]
     },

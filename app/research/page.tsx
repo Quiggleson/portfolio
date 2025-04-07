@@ -32,12 +32,6 @@ heavily rely on the second assumption.`,
             abstract: `A visual explanation of the polynomial time algorithm for 3SAT.`,
             date: "January 2024",
             url: "/research/3satpresentation"
-        },
-        {
-            name: "24 Sep 2024 3SAT Outline",
-            abstract: "Outline to fix the proof",
-            date: "Sep 2024",
-            url: "/research/3satproofoutline"
         }
     ]
 
