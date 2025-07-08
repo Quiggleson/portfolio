@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 const nunito = Nunito({ subsets: ["latin"]})
 
 export const metadata: Metadata = {
-  title: "Quigley Portfolio",
+  title: "Robert Quigley's Portfolio",
   description: "A collection of cool things",
 };
 

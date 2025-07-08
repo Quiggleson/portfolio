@@ -13,6 +13,14 @@ export default function Home() {
         {
           name: "Home", 
           url: "projects"
+        },
+        {
+          name: "Scribe",
+          url: "projects#Scribe"
+        },
+        {
+          name: "4Chess",
+          url: "projects#4Chess"
         }
       ]
     },

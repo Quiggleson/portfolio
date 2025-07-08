@@ -38,7 +38,7 @@ export default function Projects() {
                 <p className="text-xl">Projects I&apos;ve enjoyed making</p>
             </div>
             {projects.map((project, i) =>
-                <div key={i}>
+                <div key={i} id={project.name}>
                     <Preview
                         props={project}
                     />
