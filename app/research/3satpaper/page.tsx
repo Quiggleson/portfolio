@@ -16,7 +16,7 @@ export default function RefutationPaper() {
             </div>
             <div className="ml-2">
                 <p className="text-warning text-xl mt-2">Disclaimer: this is kept here for archival purposes and contains no valuable conclusions.</p>
-                <p>As one could've guessed,</p>
+                <p>As one could&apos;ve guessed,</p>
                 <p>This was foolish at best.</p>
                 <p>And it remains a test</p>
                 <p>Whether P = NP</p>
