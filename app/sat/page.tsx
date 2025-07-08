@@ -158,6 +158,11 @@ export default function Sat2() {
         return () => window.removeEventListener("scroll", () => forceUpdate(n => n + 1));
     }, []);
 
+    useEffect(() => {
+        forceUpdate(n => n + 1);
+        window.addEventListener("mouseup", () => forceUpdate(n => n + 1));
+        return () => window.removeEventListener("mouseup", () => forceUpdate(n => n + 1));
+    }, []);
 
     return (
         <div className="outline-none px-2" onKeyUpCapture={handleKeyUp} tabIndex={0}>

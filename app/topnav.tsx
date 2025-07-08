@@ -8,7 +8,6 @@ export default function TopNav() {
         // Warning: home will link incorrectly on github pages
         {name: 'Home', link: '/'},
         {name: '3SAT', link: '/sat'},
-        {name: 'Notes', link: '/notes'},
         {name: 'Projects', link: '/projects'},
         {name: 'Research', link: '/research'}
     ];

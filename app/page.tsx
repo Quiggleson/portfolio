@@ -15,13 +15,13 @@ export default function Home() {
           url: "projects"
         },
         {
+          name: "4Chess",
+          url: "projects#4Chess"
+        },
+        {
           name: "Scribe",
           url: "projects#Scribe"
         },
-        {
-          name: "4Chess",
-          url: "projects#4Chess"
-        }
       ]
     },
     {

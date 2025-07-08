@@ -14,6 +14,13 @@ export default function RefutationPaper() {
                 <h1 className="text-3xl">A Refutation of Popular Diagonalization Applications</h1>
                 <a href={`${basePath ? basePath : '' }/quigley_3sat.pdf`} target="_blank" className="outline text-xl rounded hover:bg-bg-light px-2">Download PDF</a>
             </div>
+            <div className="ml-2">
+                <p className="text-warning text-xl mt-2">Disclaimer: this is kept here for archival purposes and contains no valuable conclusions.</p>
+                <p>As one could've guessed,</p>
+                <p>This was foolish at best.</p>
+                <p>And it remains a test</p>
+                <p>Whether P = NP</p>
+            </div>
             <PDFViewer 
             file={`${basePath ? basePath : '' }/quigley_3sat.pdf`}
             />

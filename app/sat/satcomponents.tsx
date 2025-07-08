@@ -35,7 +35,7 @@ export function RenderClauses({ clauses, handleClick }: { clauses: Clause[], han
                 <div key={i}>
                     <div key={i} className="p-2">Column {i}</div>
                     {clauses.sort((a, b) => a.name.localeCompare(b.name)).filter((clause) => clause.col === i).map((clause, i) =>
-                        <div key={i} className={dragging && hovering !== i ? "bg-slate-500 outline" : ""} id={i.toString()}>
+                        <div key={i} id={i.toString()}>
                             <Draggable
                                 onStart={() => setDragging(clause)}
                                 onStop={() => setDragging(undefined)}
