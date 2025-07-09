@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from "react";
+import { useInView } from "react-intersection-observer";
 
 const basePath = process.env.NEXT_PUBLIC_ROOT_PATH;
 
@@ -18,11 +19,12 @@ export interface PreviewProps {
 export default function Preview({ props }: { props: PreviewProps }) {
 
     const [expanded, setExpanded] = useState(false);
+    const { ref, inView, entry } = useInView();
 
     return (
         <div className="justify-center flex">
             <div className="relative group text-xl w-[90vw]">
-                <div className="absolute inset-0 bg-fixed bg-center blur-sm group-hover:blur-none transition-filter ease-in-out duration-500" style={{ backgroundImage: "url(" + props.image + ")" }}>
+                <div ref={ref} className={"absolute inset-0 bg-fixed bg-center transition-filter ease-in-out duration-500 " + (inView ? 'blur-none' : 'blur-sm')} style={{ backgroundImage: "url(" + props.image + ")" }}>
                 </div>
                 <div className="relative z-10 w-full">
                     <button onClick={() => setExpanded(!expanded)} className="w-full h-full">
