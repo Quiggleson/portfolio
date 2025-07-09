@@ -33,10 +33,13 @@ export default function Preview({ props }: { props: PreviewProps }) {
                             <div className={`overflow-hidden justify-items-start transition-max-height duration-500 ease-in-out h-fit`}>
                                 <div className="flex text-left">{props.description}</div>
                                 <div className="flex">
-                                    <div className="w-fit">Tools - </div>
-                                    {props.tools.map((tool, i) =>
-                                        <div key={i} className="w-fit italic ml-2">{tool}{(i !== props.tools.length - 1) ? ', ' : ' '}</div>
-                                    )}
+                                    <div className="flex w-fit text-nowrap">Tools - </div>
+                                    <div className="pl-2 text-left">
+                                        {props.tools.map((tool, i) =>
+                                            // <div key={i} className="w-fit italic ml-2">{tool}{(i !== props.tools.length - 1) ? ', ' : ' '}</div>
+                                            <>{tool}{(i !== props.tools.length - 1) ? ', ' : ' '}</>
+                                        )}
+                                    </div>
                                 </div>
                                 <div className="flex">Team -</div>
                                 {props.team.map((member, i) =>
