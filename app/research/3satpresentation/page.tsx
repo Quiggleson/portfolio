@@ -16,7 +16,7 @@ export default function RefutationPaper() {
             </div>
             <div className="ml-2">
                 <p className="text-warning text-xl mt-2">Disclaimer: The algorithm presented in this paper is not proven to be effective.</p>
-                <p className='text-xl'>"Processing an instance" as described could be useful if there exists a value of k (independent of n) such the required clauses from the instance can be derived without processing a clause of length k or longer.</p>
+                <p className='text-xl'>&quot;Processing an instance&quot; as described could be useful if there exists a value of k (independent of n) such the required clauses from the instance can be derived without processing a clause of length k or longer.</p>
                 <p>As one could&apos;ve guessed,</p>
                 <p>This was foolish at best.</p>
                 <p>And it remains a test</p>
