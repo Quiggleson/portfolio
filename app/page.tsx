@@ -1,6 +1,7 @@
 import Image from "next/image";
 import purplePic from '../public/powered_by_purple.png'
 import Preview from "./components/preview";
+import { projects } from "./models/projects";
 
 export default function Home() {
 
@@ -13,15 +14,7 @@ export default function Home() {
         {
           name: "Home", 
           url: "projects"
-        },
-        {
-          name: "4Chess",
-          url: "projects#4Chess"
-        },
-        {
-          name: "Scribe",
-          url: "projects#Scribe"
-        },
+        }
       ]
     },
     {
@@ -57,6 +50,19 @@ export default function Home() {
       ]
     }
   ]
+
+  function update_project_previews() {
+    projects.forEach((project) => {
+      const name = project.name;
+      const url = `projects#${project.name}`;
+      previews[0].links.push({
+        name: name,
+        url: url
+      })
+    })
+  }
+
+  update_project_previews();
 
   return (
     <div>

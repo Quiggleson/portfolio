@@ -26,6 +26,15 @@ export const projects = [
             time: "Jan to April 2024",
             link: "https://github.com/PhysCorp/scribe"
         },
+        {
+            name: 'SAT',
+            description: 'An exploration of different ideas for working with 3SAT.',
+            tools: ['Python'],
+            team: [],
+            time: 'Jan 2024 to Present',
+            image: "sat_preview.png",
+            link: "https://github.com/Quiggleson/sat"
+        },
         // {
         //     name: '',
         //     description: '',

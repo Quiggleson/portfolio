@@ -31,7 +31,7 @@ export default function Preview({ props }: { props: PreviewProps }) {
                         <div className="h-[40vh]"></div>
                         <div className="pl-2 bg-bg-light h-fit py-2">
                             <div className="text-lg text-gray-500 text-left italic">{props.time}</div>
-                            <a href={props.link} className="flex hover:bg-slate-200 underline text-blue-800" target="_blank">{props.name}</a>
+                            <a href={props.link} className="rounded px-2 w-fit flex hover:bg-slate-200 underline text-blue-800" target="_blank">{props.name}</a>
                             <div className={`overflow-hidden justify-items-start transition-max-height duration-500 ease-in-out h-fit`}>
                                 <div className="flex text-left">{props.description}</div>
                                 <div className="flex">
@@ -45,7 +45,7 @@ export default function Preview({ props }: { props: PreviewProps }) {
                                 </div>
                                 <div className="flex">Team -</div>
                                 {props.team.map((member, i) =>
-                                    <a key={i} href={member.url} className="ml-4 flex hover:bg-slate-200 underline text-blue-800" target="_blank">{member.name}</a>
+                                    <a key={i} href={member.url} className="rounded px-2 ml-4 flex hover:bg-slate-200 underline text-blue-800" target="_blank">{member.name}</a>
                                 )}
                             </div>
                         </div>
