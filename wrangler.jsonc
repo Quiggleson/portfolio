@@ -13,6 +13,10 @@
     {
         "pattern": "quiggleson.com",
         "custom_domain": true
+    },
+    {
+        "pattern": "www.quiggleson.com",
+        "custom_domain": true
     }
   ]
 }
