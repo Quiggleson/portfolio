@@ -8,5 +8,11 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
-  }
+  },
+  "routes": [
+    {
+        "pattern": "quiggleson.com",
+        "custom_domain": true
+    }
+  ]
 }
