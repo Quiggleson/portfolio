@@ -18,9 +18,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={nunito.className}>
+      <body className={nunito.className + ' ' + 'flex flex-col h-screen max-h-screen overflow-hidden'}>
         <TopNav />
-        <div className="animate-fadeInBottom size-full">
+        <div className="animate-fadeInBottom size-full overflow-y-scroll overflow-x-hidden">
           {children}
         </div>
         </body>

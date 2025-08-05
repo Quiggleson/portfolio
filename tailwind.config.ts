@@ -67,7 +67,14 @@ const config: Config = {
         'bg-light': '#d9d9d9',
         'bg-default': '#bfbfbf',
         'line-color': '#000',
-        'warning': '#cc0000'
+        'warning': '#cc0000',
+
+        'primary': '#bfbfbf',
+        'surface': '#cfcefd',
+        'surface-dark': '#846df8',
+        'btn-hover': '#fff',
+        'scrim': 'rgba(0, 0, 0, .5)'
+
       },
       transitionProperty: {
         'max-height': 'max-height',

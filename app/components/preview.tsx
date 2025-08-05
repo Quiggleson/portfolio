@@ -20,7 +20,7 @@ export default function Preview({ props }: { props: PreviewProps }) {
 
     return (
         <div className="relative group text-xl">
-            <div ref={ref} className={"absolute inset-0 bg-fixed bg-center transition-filter ease-in-out duration-500 " + (inView ? 'blur-none' : 'blur-sm')}  style={{ backgroundImage: "url(" + props.picture + ")" }}>
+            <div ref={ref} className={"absolute inset-0 md:bg-fixed sm:bg-scroll [background-position-x:center] md:[background-position-y:center] transition-filter ease-in-out duration-500 " + (inView ? 'blur-none' : 'blur-sm')}  style={{ backgroundImage: "url(" + props.picture + ")" }}>
             </div>
             <div className="relative z-10 w-full">
                 <button onClick={() => setExpanded(!expanded)} className="w-full h-full">

@@ -66,7 +66,7 @@ export default function Home() {
 
   return (
     <div>
-      <div className="w-screen text-center bg-slate-100 h-[80vh] place-content-center">
+      <div className="w-screen text-center bg-slate-100 h-[80vh] place-content-center overflow-y-scroll">
           <h1 className="text-7xl font-bold">Welcome!</h1>
           <p className="text-gray-500">This website houses a collection of things I find cool</p>
           <p className="text-gray-500">Click on any section below to learn more!</p>
