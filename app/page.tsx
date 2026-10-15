@@ -48,6 +48,17 @@ export default function Home() {
           url: "sat"
         }
       ]
+    },
+    {
+      picture: "pilot_preview.png",
+      name: "Pilot",
+      description: "The first installable sub-app, served from its own repo",
+      links: [
+        {
+          name: "Home",
+          url: "pilot/"
+        }
+      ]
     }
   ]
 
